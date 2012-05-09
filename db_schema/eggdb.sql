@@ -6,8 +6,9 @@ CREATE TABLE  `eggdb`.`badges` (
     `name` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
     `description` VARCHAR( 1000 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL ,
     `parent` INT UNSIGNED NOT NULL ,
-    `type` ENUM(  'category',  'boolean' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT  'boolean',
-    INDEX `INDEX` (  `parent` ,  `type` )
+    `type` ENUM(  'category',  'boolean' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT  'boolean' ,
+    INDEX `parent` (  `parent` ) ,
+    INDEX `type` (  `type` )
 ) ENGINE = INNODB CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
 CREATE TABLE  `eggdb`.`users` (
@@ -23,5 +24,7 @@ CREATE TABLE  `eggdb`.`badges_users` (
     `value` TINYINT( 1 ) NOT NULL ,
     `description` VARCHAR( 1000 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL ,
     PRIMARY KEY (  `badge_id` ,  `user_id` ) ,
-    INDEX `INDEX` (  `badge_id` ,  `user_id` ,  `value` )
+    INDEX `badge_id` (  `badge_id`  ) ,
+    INDEX `user_id` (  `user_id`  ) ,
+    INDEX `value` (  `value`  )
 ) ENGINE = INNODB CHARACTER SET utf8 COLLATE utf8_unicode_ci;
