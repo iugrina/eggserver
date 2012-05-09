@@ -1,4 +1,12 @@
-CREATE DATABASE IF NOT EXISTS eggdb COLLATE = 'utf8_unicode_ci';
+--
+-- Database: `eggdb`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `badges`
+--
 
 CREATE TABLE  `eggdb`.`badges` (
     `badge_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
@@ -11,12 +19,24 @@ CREATE TABLE  `eggdb`.`badges` (
     INDEX `type` (  `type` )
 ) ENGINE = INNODB CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `badges_users`
+--
+
 CREATE TABLE  `eggdb`.`users` (
     `user_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     `first_name` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL ,
     `last_name` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL ,
     `email` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE = INNODB CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
 
 CREATE TABLE  `eggdb`.`badges_users` (
     `badge_id` BIGINT UNSIGNED NOT NULL ,
@@ -28,3 +48,10 @@ CREATE TABLE  `eggdb`.`badges_users` (
     INDEX `user_id` (  `user_id`  ) ,
     INDEX `value` (  `value`  )
 ) ENGINE = INNODB CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
+--
+-- Constraints for table `badges_users`
+--
+ALTER TABLE `badges_users`
+  ADD CONSTRAINT `badges_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `badges_users_ibfk_1` FOREIGN KEY (`badge_id`) REFERENCES `badges` (`badge_id`) ON DELETE CASCADE ON UPDATE CASCADE;
