@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Badges</title>
+    <link href="{{ static_url("bootstrap/css/bootstrap.min.css") }}" rel="stylesheet" />
+    <style type="text/css">
+      #badges-container { margin-top: 20px; }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row" id="badges-container">
+      <h1>Egg Badges</h1>
+      {% if len(badges) is 0 %}
+        <p>No badges in database.</p>
+        <ul class="nav nav-pills">
+          <li><a href="/badges/add">add new</a></li>
+        </ul>
+      {% else %}
+        <p>Foo</p>
+      {% end %}
+    </div>
+  </div>
+</body>
+</html>
