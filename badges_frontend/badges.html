@@ -4,21 +4,124 @@
     <meta charset="UTF-8" />
     <title>Badges</title>
     <link href="{{ static_url("bootstrap/css/bootstrap.min.css") }}" rel="stylesheet" />
+    
     <style type="text/css">
       #badges-container { margin-top: 20px; }
+      #multiSelect { width: 350px; }
+      .alert-success, .alert-error { width: 370px; }
     </style>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ static_url("bootstrap/js/bootstrap.min.js") }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            $("#add-new-button").click(function() {
+               $("#add-new-form").toggle('slow');
+               return false;
+            });
+            $("#add-new-cancel").click(function() {
+               $("#add-new-form").hide('slow');
+               return false;
+            });
+        });
+    </script>
 </head>
 <body>
   <div class="container">
     <div class="row" id="badges-container">
       <h1>Egg Badges</h1>
+        <ul class="nav nav-pills">
+            <li><a href="#" id="add-new-button">add new</a></li>
+        </ul>
+        
+        {% if added_new %}
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>Well done!</strong> You successfully added new badge!
+        </div>
+        {% end %}
+        {% if error %}
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>Oh snap!</strong> Change a few things up and try again.
+        </div>
+        {% end %}
+        
+        <form name="add-new" method="post" action="/badges/add" enctype="multipart/form-data" class="form-horizontal" id="add-new-form">
+            <fieldset>
+              <div class="control-group">
+                <label class="control-label" for="input01">Name</label>
+                <div class="controls">
+                  <input name="name" type="text" class="input-xlarge" id="input01">
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="textarea">Description</label>
+                <div class="controls">
+                  <textarea name="description" class="input-xlarge" id="textarea" rows="3"></textarea>
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="select01">Parent</label>
+                <div class="controls">
+                  <select name="parent" id="select01">
+                    <option value="0">-- root</option>
+                    {% for badge in badges %}
+                        <option value="{{ badge.badge_id }}">{{ badge.name }}</option>
+                    {% end %}
+                  </select>
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="multiSelect">Type</label>
+                <div class="controls">
+                  <select name="type" size="4" id="multiSelect">
+                    <option value="1">(1) not important - children important - only one child</option>
+                    <option value="2">(2) important - no children</option>
+                    <option value="3">(3) important - children</option>
+                    <option value="4">(4) not important - children important - multiple children</option>
+                  </select>
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="fileInput">Image</label>
+                <div class="controls">
+                  <input name="image" class="input-file" id="fileInput" type="file">
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary add-new-submit">Save changes</button>
+                <button class="btn" id="add-new-cancel">Cancel</button>
+              </div>
+            </fieldset>
+        </form>
+        
       {% if len(badges) is 0 %}
         <p>No badges in database.</p>
-        <ul class="nav nav-pills">
-          <li><a href="/badges/add">add new</a></li>
-        </ul>
       {% else %}
-        <p>Foo</p>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>badgeID</th>
+                    <th>name</th>
+                    <th>image link</th>
+                    <th>description</th>
+                    <th>parent</th>
+                    <th>type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for badge in badges %}
+                    <tr>
+                        <td>{{ badge.badge_id }}</td>
+                        <td>{{ badge.name }}</td>
+                        <td>{{ badge.link }}</td>
+                        <td>{{ badge.description }}</td>
+                        <td>{{ badge.parent }}</td>
+                        <td>{{ badge.type }}</td>
+                    </tr>
+                {% end %}    
+            </tbody>
+        </table>
       {% end %}
     </div>
   </div>
