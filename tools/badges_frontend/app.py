@@ -46,6 +46,15 @@ class AddNewHandler(ProtoHandler):
       badges = self.db.query("select * from badges")
       self.render("badges.html", badges=badges, added_new=False, error=True)
 
+class DeleteHandler(ProtoHandler):
+  def get(self, bid):
+    try:
+      self.db.execute("delete from badges where badge_id=%s", bid)
+      
+    except Exception:
+      badges = self.db.query("select * from badges")
+      self.render("badges.html", badges=badges, added_new=False, error=True)
+
 db = tornado.database.Connection("localhost", "eggdb", user="root", password="root")
 
 settings = {
@@ -56,6 +65,7 @@ settings = {
 application = tornado.web.Application([
   (r"/", MainHandler, dict(db=db)),
   (r"/badges/add", AddNewHandler, dict(db=db)),
+  (r"/badges/delete/([^/]+)", DeleteHandler, dict(db=db)),
 ], **settings)
 
 if __name__ == "__main__":
