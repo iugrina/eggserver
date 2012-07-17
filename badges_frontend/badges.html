@@ -10,6 +10,7 @@
     .table { margin-top: 50px; }
     #multiSelect { width: 350px; }
     .alert-success, .alert-error { width: 370px; margin-top: 20px; }
+    .delete-badge-row, .edit-badge-row { width: 30px; }
   </style>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
   <script type="text/javascript" src="{{ static_url("bootstrap/js/bootstrap.min.js") }}"></script>
@@ -24,6 +25,14 @@
         $("#add-new-form").hide('slow');
         return false;
       });
+      $(".table tr").hover(
+        function () {
+          $(this).find(".btn-danger, .btn-inverse").toggle();
+        },
+        function () {
+          $(this).find(".btn-danger, .btn-inverse").toggle();
+        }
+      );
     });
   </script>
 </head>
@@ -123,6 +132,8 @@
               <th>description</th>
               <th>parent</th>
               <th>type</th>
+              <th class="edit-badge-row"></th>
+              <th class="delete-badge-row"></th>
             </tr>
           </thead>
           <tbody>
@@ -134,8 +145,10 @@
                 <td>{{ badge.description }}</td>
                 <td>{{ badge.parent }}</td>
                 <td>{{ badge.type }}</td>
+                <td><a class="btn btn-inverse btn-edit-badge hide" href="#"><i class="icon-edit icon-white"></i></a></td>
+                <td><a class="btn btn-danger btn-delete-badge hide" href="#"><i class="icon-trash icon-white"></i></a></td>
               </tr>
-            {% end %}    
+            {% end %}
           </tbody>
         </table>
       {% end %}
