@@ -49,6 +49,12 @@ class AddNewHandler(ProtoHandler):
 class DeleteHandler(ProtoHandler):
   def get(self, bid):
     try:
+      result = self.db.query("select link from badges where badge_id=%s", bid)
+      filename = result[0]['link']
+      path = "./thumb/" + filename
+      if os.path.isfile(path):
+        os.remove(path)
+        
       self.db.execute("delete from badges where badge_id=%s", bid)
       
     except Exception:
