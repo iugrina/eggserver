@@ -47,7 +47,6 @@
         $('#delete-badge-modal').modal('hide');
         return false;
       });
-      
     });
   </script>
 </head>
@@ -147,7 +146,7 @@
               <th>description</th>
               <th>parent</th>
               <th>type</th>
-              <th class="edit-badge-row"></th>
+              <!--<th class="edit-badge-row"></th>-->
               <th class="delete-badge-row"></th>
             </tr>
           </thead>
@@ -160,7 +159,7 @@
                 <td>{{ badge.description }}</td>
                 <td>{{ badge.parent }}</td>
                 <td>{{ badge.type }}</td>
-                <td><a class="btn btn-inverse btn-edit-badge hide" href="#" title="Edit badge"><i class="icon-edit icon-white"></i></a></td>
+                <!--<td><a class="btn btn-inverse btn-edit-badge hide" href="#" title="Edit badge"><i class="icon-edit icon-white"></i></a></td>-->
                 <td><a class="btn btn-danger btn-delete-badge hide" title="Delete badge" id="bid-{{ badge.badge_id }}"><i class="icon-trash icon-white"></i></a></td>
               </tr>
             {% end %}
