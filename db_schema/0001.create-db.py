@@ -27,7 +27,6 @@ step(
       PRIMARY KEY (`badge_id`,`user_id`),
       KEY `badge_id` (`badge_id`),
       KEY `user_id` (`user_id`),
-      KEY `value` (`value`),
       CONSTRAINT `badges_users_ibfk_1` FOREIGN KEY (`badge_id`) REFERENCES `badges` (`badge_id`) ON DELETE CASCADE ON UPDATE CASCADE,
       CONSTRAINT `badges_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -108,5 +107,6 @@ step(
   DROP TABLE event_participant_badges;
   DROP TABLE event_participants;
   DROP TABLE event_photos;
-  """
+  """,
+  ignore_errors='apply'
 )
