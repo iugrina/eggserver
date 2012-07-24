@@ -39,10 +39,10 @@ step(
       `expected_duration` time DEFAULT NULL,
       `registration_deadline` datetime DEFAULT NULL,
       `location` varchar(255) DEFAULT NULL,
-      `hide_location` tinyint(4) DEFAULT NULL,
+      `hide_location` tinyint(1) DEFAULT NULL,
       `registration_price` decimal(10,2) DEFAULT NULL,
       `creation_price` decimal(10,2) DEFAULT NULL,
-      `is_active` tinyint(4) DEFAULT NULL,
+      `is_active` tinyint(1) DEFAULT NULL,
       `phase` enum('before_deadline','before_event','during_event','after_event') DEFAULT NULL,
       PRIMARY KEY (`event_id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
