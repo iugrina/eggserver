@@ -5,6 +5,8 @@ from sqlalchemy import select
 from tornado.options import options
 import settings
 import sqlalchemy
+import json
+import utils
 
 class Application(tornado.web.Application):
   def __init__(self):
@@ -36,8 +38,9 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class EventsHandler(BaseHandler):
   def get(self):
-    users = sqlalchemy.Table("users", self.metadata)
-    users.select().execute().first()
+    users = sqlalchemy.Table("events", self.metadata, autoload=True)
+    r = users.select().execute()
+    self.write(json.dumps(utils.jsonify(r)))
 
 if __name__ == "__main__":
   app = Application()
