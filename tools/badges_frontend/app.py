@@ -63,17 +63,8 @@ class DeleteHandler(ProtoHandler):
       self.render("badges.html", badges=badges, added_new=False, error=True)
 
 class GenerateTree(ProtoHandler):
-  def gt( self, x, arg, R ) :
-    # creates dict with key=parent_id
-    # value=list(all of the children of that parent)
-    try:
-      R[ x[arg] ].append(x)
-    except KeyError:
-      R[ x[arg] ] = list()
-      R[ x[arg] ].append(x)
-
   def genTreeRec( self, x, parent_ids, R ) :
-    if( x['badge_id'] not in parent_ids ) :
+    if x['badge_id'] not in parent_ids :
         return( {'node': x, 'children': None} )
     else :
         return( { 'node': x, 'children' : [ self.genTreeRec(x, parent_ids, R) for x in R[ x['badge_id'] ] ] } )
@@ -83,12 +74,16 @@ class GenerateTree(ProtoHandler):
 
     R = dict()
     arg = 'parent'
-    [ self.gt( x, arg, R ) for x in badges ]
+
+    # creates dict with key=parent_id
+    # value=list(all of the children of that parent)
+    [ R.setdefault( x[arg], [] ).append(x) for x in badges ]
 
     parent_ids = R.keys()
 
     # root node always has id=0
     self.write( json.dumps( [ self.genTreeRec(x, parent_ids, R) for x in R[0]] ) )
+
  
 # user egg is more secure than user root
 db = tornado.database.Connection("localhost", "eggdb", user="egg", password="")
