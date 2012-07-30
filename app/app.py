@@ -38,9 +38,14 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class EventsHandler(BaseHandler):
   def get(self):
-    users = sqlalchemy.Table("events", self.metadata, autoload=True)
-    r = users.select().execute()
-    self.write(json.dumps(utils.jsonResult(r)))
+    try:
+      users = sqlalchemy.Table("events", self.metadata, autoload=True)
+      r = users.select().execute()
+      self.write(json.dumps(utils.jsonResult(r)))
+      
+    except:
+      pass
+
 
 if __name__ == "__main__":
   app = Application()
