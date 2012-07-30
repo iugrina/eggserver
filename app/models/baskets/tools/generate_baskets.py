@@ -1,4 +1,4 @@
-from egg.baskets.mongodb_model import Basket
+from models.baskets.mongodb_model import Basket
 from mongokit import *
 import random
 

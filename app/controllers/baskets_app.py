@@ -6,9 +6,9 @@ import tornado.web
 import mongokit
 import json
 
-import egg.baskets.dbproxy as dbproxy
-import egg.common.eggErrors as eggErrors
-from egg.baskets.mongodb_model import Basket
+import models.baskets.dbproxy as dbproxy
+import common.eggErrors as eggErrors
+from models.baskets.mongodb_model import Basket
 
     
 class BasketHandler(tornado.web.RequestHandler):

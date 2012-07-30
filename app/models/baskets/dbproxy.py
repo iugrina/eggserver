@@ -1,4 +1,4 @@
-from ..common import eggErrors
+from common import eggErrors
 from mongodb_model import Basket
 import mongoconnector
 
