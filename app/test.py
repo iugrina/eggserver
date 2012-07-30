@@ -1,12 +1,12 @@
 import app
-from utils import jsonify
+import utils
 from decimal import Decimal
 import datetime
 
 egg = app.Application()
 events = app.sqlalchemy.Table('events', egg.metadata, autoload=True)
 r = events.select().execute()
-print jsonify(r)
+print utils.jsonResult(r)
 
 
 #users = app.sqlalchemy.Table('users', egg.metadata, autoload=True)

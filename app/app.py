@@ -40,7 +40,7 @@ class EventsHandler(BaseHandler):
   def get(self):
     users = sqlalchemy.Table("events", self.metadata, autoload=True)
     r = users.select().execute()
-    self.write(json.dumps(utils.jsonify(r)))
+    self.write(json.dumps(utils.jsonResult(r)))
 
 if __name__ == "__main__":
   app = Application()
