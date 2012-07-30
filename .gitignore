@@ -1,3 +1,4 @@
 *.komodoproject
 badges_frontend/thumb
 db_schema/.yoyo-migrate
+*.pyc
