@@ -68,6 +68,8 @@ function renderTree(data) {
   for (x in badges) {
     createRow(badges[x], tbody, iter);
   }
+  
+  renderBadgeDetails();
 }
 
 function createRow(badge, tbody, iter) {
@@ -79,11 +81,37 @@ function createRow(badge, tbody, iter) {
   }
   
   iter++;
-  
-  tbody.append('<tr><td style="' + padding + '">' + childImg + badge.node.name + '</td></tr>');
+  tbody.append('<tr><td style="' + padding + '" id="badge-row-' + badge.node.badge_id + '">' + childImg + badge.node.name + '</td></tr>');
   if (badge.children) {
     for (x in badge.children) {
       createRow(badge.children[x], tbody, iter);
     }
   }
+}
+
+function renderBadgeDetails() {
+  $("#badges-tree td").hover(
+    function () {
+      $("#badge-details-container").remove();
+      bid = $(this).attr("id").slice(10);
+      $.get('/badges/get/' + bid, function(data) {
+        var badge = $.parseJSON(data);
+        var container = $("#badges-container");
+        var badgeDetails = '';
+        
+        badgeDetails += '<div id="badge-details-container">';
+        badgeDetails += '<h2>' + badge[0].name + '</h2>';
+        badgeDetails += '<p><strong>id: </strong>' + badge[0].badge_id + '</p>';
+        badgeDetails += '<p><strong>description: </strong>' + badge[0].description + '</p>';
+        badgeDetails += '<p><strong>type: </strong>' + badge[0].type + '</p>';
+        badgeDetails += '</div>';
+        
+        container.append(badgeDetails);
+        $("#badge-details-container").css("top", $(window).scrollTop() + 200 + 'px');
+      });
+    },
+    function () {
+      $("#badge-details-container").remove();
+    }
+  );
 }

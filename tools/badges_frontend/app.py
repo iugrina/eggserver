@@ -46,7 +46,13 @@ class AddNewHandler(ProtoHandler):
     except Exception:
       badges = self.db.query("select * from badges")
       self.render("badges.html", badges=badges, added_new=False, error=True)
-
+      
+class GetHandler(ProtoHandler):
+  def get(self, bid):
+    result = self.db.query("select * from badges where badge_id=%s", bid)
+      
+    self.write(json.dumps(result))
+      
 class DeleteHandler(ProtoHandler):
   def get(self, bid):
     try:
@@ -97,6 +103,7 @@ application = tornado.web.Application([
   (r"/", MainHandler, dict(db=db)),
   (r"/tree/get", GenerateTree, dict(db=db)),
   (r"/badges/add", AddNewHandler, dict(db=db)),
+  (r"/badges/get/([^/]+)", GetHandler, dict(db=db)),
   (r"/badges/delete/([^/]+)", DeleteHandler, dict(db=db)),
 ], **settings)
 
