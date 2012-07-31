@@ -18,6 +18,7 @@ class DbProxy:
         # for now there is only MongoDB
         self.currentdb = self.dbmongo
 
+
     def get_baskets(self, user_id): 
         "Returns all baskets for user with user_id"
         self.__chooseDB()
@@ -25,6 +26,25 @@ class DbProxy:
             return self.mc.get_baskets(user_id)
         else :
             pass
+
+
+    def change_order_of_baskets(self, user_id, new_order):
+        "Changes the order of baskets for user with user_id"
+
+        # this part should be done in mongodb and then
+        # refreshed in redis (caching algorithm???)
+
+        return self.mc.change_order_of_baskets( user_id, new_order )
+
+
+    def add_basket(self, user_id, basket_name) :
+        "Creates new basket with basket_name for user with user_id"
+
+        # this part should be done in mongodb and then
+        # refreshed in redis (caching algorithm???)
+
+        self.mc.add_basket( user_id, basket_name )
+
 
     def get_basket(self, user_id, basket_id):
         "Returns basket with basket_id for with user_id"
@@ -34,13 +54,6 @@ class DbProxy:
         else :
             pass
 
-    def add_basket(self, user_id, basket_name) :
-        "Creates new basket with basket_name for user with user_id"
-        
-        # this part should be done in mongodb and then
-        # refreshed in redis (caching algorithm???)
-
-        return self.mc.add_basket( user_id, basket_name )
 
     def delete_basket(self, user_id, basket_id):
         """Removes basket with basket_id from user with user_id
@@ -51,17 +64,7 @@ class DbProxy:
 
         return self.mc.delete_basket( user_id, basket_id )
 
-        
 
-    def change_order_of_baskets(self, user_id, new_order):
-        "Changes the order of baskets for user with user_id"
-
-        # this part should be done in mongodb and then
-        # refreshed in redis (caching algorithm???)
-
-        return self.mc.change_order_of_baskets( user_id, new_order )
-
-        
     def change_order_of_users_in_basket(self, user_id, basket_id, new_order):
         "Changes the order of users in basket with basket_id for user with user_id"
 
