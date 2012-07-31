@@ -1,0 +1,45 @@
+<html>
+<head>
+<title>
+add basket form
+</title>
+<script type="text/javascript">
+function post_to_url(path, params,  method)
+{
+    // Set method to post by default, if not specified.
+    method = method || "post"; 
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path + params["user_id"].value + "/basket" );
+
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", params[key].name);
+            hiddenField.setAttribute("value", params[key].value);
+
+            form.appendChild(hiddenField);
+         }
+    }
+
+
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>
+</head>
+
+<body>
+<form id="myform" action="" >
+User id: <input type="text" name="user_id" /> <br/>
+Basket name: <input type="text" name="basket_name" /> <br/>
+<INPUT TYPE="button" NAME="button" Value="Click"
+onClick="(post_to_url('http://localhost:8888/profile/', this.form.elements, 'post'))">
+</FORM>
+</form>
+</body>
+</html>
