@@ -1,6 +1,5 @@
 import tornado.ioloop
 import tornado.web
-from sqlalchemy import select
 
 from tornado.options import options
 import settings
@@ -22,29 +21,10 @@ class Application(tornado.web.Application):
                                        options.password + "@" + options.host + "/" +
                                        options.database)
     self.metadata  = sqlalchemy.MetaData(bind=self.db)
-    self.db.echo = "debug"
+    #self.db.echo = "debug"
     tornado.web.Application.__init__(self, handlers, **settings)
 
 
-class BaseHandler(tornado.web.RequestHandler):
-  @property
-  def db(self):
-    return self.application.db
-
-  @property
-  def metadata(self):
-    return self.application.metadata
-
-
-class EventsHandler(BaseHandler):
-  def get(self):
-    try:
-      users = sqlalchemy.Table("events", self.metadata, autoload=True)
-      r = users.select().execute()
-      self.write(json.dumps(utils.jsonResult(r)))
-      
-    except:
-      pass
 
 
 if __name__ == "__main__":
