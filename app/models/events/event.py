@@ -5,14 +5,16 @@ class Event:
   def __init__(self, db):
     "Takes sqlalchemy connector"
     self.db = db
-    self.table = sqlalchemy.Table("events", db.metadata, autoload=True)
+    self.table = sqlalchemy.Table("events", self.db.metadata, autoload=True)
+    #print dir(self.table)
 
   def get_event(self, event_id):
     "Returns event with event_id"
-    return self.table.select(self.table.c.event_id=int(event_id)).execute()
+    return self.table.select(self.table.c.event_id == event_id).execute()
+
 
   def add_event(self):
-    
+    pass
 
   def delete_event(self, event_id):
     pass

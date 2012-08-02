@@ -4,27 +4,26 @@ import tornado.web
 from tornado.options import options
 import settings
 import sqlalchemy
-import json
-import utils
+import controllers
+from common import utils
 
 class Application(tornado.web.Application):
   def __init__(self):
+    self.db = sqlalchemy.create_engine(options.engine + "://" + options.user + ":" +
+                                       options.password + "@" + options.host + "/" +
+                                       options.database)
+    self.db.metadata  = sqlalchemy.MetaData(bind=self.db)
+    #self.db.echo = "debug"
+
     handlers = [
-      (r"/events/", EventsHandler),
+      (r"/events/", controllers.events.EventsHandler, dict(db=self.db)),
     ]
 
     settings = dict(
       debug=True,
     )
 
-    self.db = sqlalchemy.create_engine(options.engine + "://" + options.user + ":" +
-                                       options.password + "@" + options.host + "/" +
-                                       options.database)
-    self.metadata  = sqlalchemy.MetaData(bind=self.db)
-    #self.db.echo = "debug"
-    tornado.web.Application.__init__(self, handlers, **settings)
-
-
+    tornado.web.Application.__init__(self, handlers)
 
 
 if __name__ == "__main__":

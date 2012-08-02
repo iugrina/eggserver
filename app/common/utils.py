@@ -25,4 +25,4 @@ def jsonResult(result):
     dic = {}
     i = 0
     jsonr.append(jsonRow(row))
-  return jsonr
+  return json.dumps(jsonr)

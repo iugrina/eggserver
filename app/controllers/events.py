@@ -1,23 +1,16 @@
 import tornado.web
+from models.events.event import Event
+from common import utils
 
-class BaseEventHandler(tornado.web.RequestHandler):
-  @property
-  def db(self):
-    return self.application.db
-
-  @property
-  def metadata(self):
-    return self.application.metadata
-
-
-class EventsHandler(BaseHandler):
-  @property
-  def table(self):
-    return sqlalchemy.Table("events", self.metadata, autoload=True)
+class EventsHandler(tornado.web.RequestHandler):
+  def initialize(self, db):
+    self.db = db
+    self.event = Event(self.db)
 
   def get(self):
-    r = self.table.select().execute()
-    self.write(json.dumps(utils.jsonResult(r)))
+    result = self.event.get_event(1)
+    json = utils.jsonResult(result)
+    self.write(json)
 
   def post(self):
     name = self.get_argument("name")
