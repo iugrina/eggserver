@@ -11,30 +11,13 @@
     #multiSelect { width: 350px; }
     .alert-success, .alert-error { width: 370px; margin-top: 20px; }
     .delete-badge-row, .edit-badge-row { width: 30px; }
+    .hierarchy-tree-line { padding: 0 5px; }
+    #badges-tree { display: none; }
+    #badge-details-container { position: absolute; width: 300px; height: 200px; background: gray; left: 800px; padding: 20px; opacity: 0.9; border: 1px solid black; border-radius: 3px; }
   </style>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
   <script type="text/javascript" src="{{ static_url("bootstrap/js/bootstrap.min.js") }}"></script>
-  <script type="text/javascript">
-    $(function() {
-      $("#add-new-button").click(function() {
-        $(".alert").hide();
-        $("#add-new-form").toggle('slow');
-        return false;
-      });
-      $("#add-new-cancel").click(function() {
-        $("#add-new-form").hide('slow');
-        return false;
-      });
-      $(".table tr").hover(
-        function () {
-          $(this).find(".btn-danger, .btn-inverse").toggle();
-        },
-        function () {
-          $(this).find(".btn-danger, .btn-inverse").toggle();
-        }
-      );
-    });
-  </script>
+  <script type="text/javascript" src="{{ static_url("js/badges.js") }}"></script>
 </head>
 <body>
   <div class="container">
@@ -50,8 +33,9 @@
             <a class="brand" href="/">Egg Badges</a>
             <div class="nav-collapse">
               <ul class="nav">
-                <li class="active"><a href="/">Home</a></li>
-                <li><a href="#" id="add-new-button">Add New</a></li>
+                <li class="active home-link"><a href="/">Home</a></li>
+                <li class="tree-link"><a href="/">Tree</a></li>
+                <li class="add-new-link"><a href="#" id="add-new-button">Add New</a></li>
               </ul>
             </div><!-- /.nav-collapse -->
           </div>
@@ -123,16 +107,15 @@
       {% if len(badges) is 0 %}
         <p>No badges in database.</p>
       {% else %}
-        <table class="table table-striped">
+        <table class="table table-striped" id="badges-list">
           <thead>
             <tr>
               <th>badgeID</th>
               <th>name</th>
-              <th>image link</th>
+              <th>thumbnail</th>
               <th>description</th>
               <th>parent</th>
               <th>type</th>
-              <th class="edit-badge-row"></th>
               <th class="delete-badge-row"></th>
             </tr>
           </thead>
@@ -145,13 +128,36 @@
                 <td>{{ badge.description }}</td>
                 <td>{{ badge.parent }}</td>
                 <td>{{ badge.type }}</td>
-                <td><a class="btn btn-inverse btn-edit-badge hide" href="#"><i class="icon-edit icon-white"></i></a></td>
-                <td><a class="btn btn-danger btn-delete-badge hide" href="#"><i class="icon-trash icon-white"></i></a></td>
+                <td><a class="btn btn-danger btn-delete-badge hide" title="Delete badge" id="bid-{{ badge.badge_id }}"><i class="icon-trash icon-white"></i></a></td>
               </tr>
             {% end %}
           </tbody>
         </table>
+        
+        <table class="table table-striped" id="badges-tree">
+          <thead>
+            <tr>
+              <th><h3>Badges Tree</h3></th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
       {% end %}
+    </div>
+  </div>
+  
+  <div class="modal hide" id="delete-badge-modal">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">×</button>
+      <h3>Warning:</h3>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete this badge? This action cannot be reverted.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+      <a href="#" class="btn btn-danger btn-delete-badge-confirm"><i class="icon-trash icon-white"></i> Delete</a>
     </div>
   </div>
 </body>
