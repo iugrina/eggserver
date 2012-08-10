@@ -35,7 +35,7 @@ class AddNewBadgeHandler(ProtoHandler):
         file.close()
         
         self.db.execute(
-            "INSERT INTO badges (name, link, description, parent, type) "
+            "INSERT INTO badges (name, image_link, description, parent, type) "
             "VALUES (%s, %s, %s, %s, %s)",
             name, filename, description, parent, type)
         
@@ -56,8 +56,8 @@ class GetBadgeHandler(ProtoHandler):
 class DeleteBadgeHandler1(ProtoHandler):
   def get(self, bid):
     try:
-      result = self.db.query("select link from badges where badge_id=%s", bid)
-      filename = result[0]['link']
+      result = self.db.query("select image_link from badges where badge_id=%s", bid)
+      filename = result[0]['image_link']
       path = "./thumb/" + filename
       if os.path.isfile(path):
         os.remove(path)

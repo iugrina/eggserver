@@ -74,8 +74,10 @@
             <div class="controls">
               <select name="parent" id="select01">
                 <option value="0">-- root</option>
-                {% for badge in badges %}
-                  <option value="{{ badge.badge_id }}">{{ badge.name }}</option>
+                {% if len(badges) > 0 %}
+                  {% for badge in badges %}
+                    <option value="{{ badge.badge_id }}">{{ badge.name }}</option>
+                  {% end %}
                 {% end %}
               </select>
             </div>
@@ -124,7 +126,7 @@
               <tr>
                 <td>{{ badge.badge_id }}</td>
                 <td>{{ badge.name }}</td>
-                <td>{{ badge.link }}</td>
+                <td>{{ badge.image_link }}</td>
                 <td>{{ badge.description }}</td>
                 <td>{{ badge.parent }}</td>
                 <td>{{ badge.type }}</td>
