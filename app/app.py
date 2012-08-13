@@ -18,6 +18,7 @@ class Application(tornado.web.Application):
     handlers = [
       (r"/event/", controllers.events.EventsHandler, dict(db=self.db)),
       (r"/event/([0-9]+)", controllers.events.EventHandler, dict(db=self.db)),
+      (r"/event/([0-9]+)/user/([0-9]+)", controllers.events.EventUserHandler, dict(db=self.db)),
     ]
 
     settings = dict(

@@ -25,11 +25,22 @@ class Event:
     self.db.execute(self.mysqlTable.events.update().where(self.mysqlTable.events.c.event_id == event_id)
                     .values(params))
 
-  def update_event_user(self, event_id, user_id):
-    pass
+  def add_event_user(self, event_id, user_id, params):
+    "Adds new user to event"
+    params["event_id"] = event_id
+    params["user_id"] = user_id
+    self.db.execute(self.mysqlTable.event_participants.insert().values(params))
 
-  def delete_user_from_event(self, event_id, user_id):
-    pass
+  def update_event_user(self, event_id, user_id, params):
+    self.db.execute(self.mysqlTable.event_participants.update().where(
+        self.mysqlTable.event_participants.c.event_id == event_id).where(
+        self.mysqlTable.event_participants.c.user_id == user_id).values(params))
+
+  def delete_event_user(self, event_id, user_id):
+    "Removes user from event"
+    self.db.execute(self.mysqlTable.event_participants.delete().where(
+        self.mysqlTable.event_participants.c.event_id == event_id).where(
+        self.mysqlTable.event_participants.c.user_id == user_id))
 
   def add_event_rating(self, event_id, rating):
     pass
