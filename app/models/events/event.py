@@ -6,14 +6,13 @@ class Event:
     "Takes sqlalchemy connector"
     self.db = db
     self.table = sqlalchemy.Table("events", self.db.metadata, autoload=True)
-    #print dir(self.table)
+
 
   def get_event(self, event_id):
     "Returns event with event_id"
     return self.table.select(self.table.c.event_id == event_id).execute()
 
-
-  def add_event(self):
+  def add_event(self, params):
     pass
 
   def delete_event(self, event_id):

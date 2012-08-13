@@ -1,6 +1,7 @@
 import tornado.web
 from models.events.event import Event
 from common import utils
+from pprint import pprint as pp
 
 class EventsHandler(tornado.web.RequestHandler):
   def initialize(self, db):
@@ -8,21 +9,18 @@ class EventsHandler(tornado.web.RequestHandler):
     self.event = Event(self.db)
 
   def get(self):
-    result = self.event.get_event(1)
+    event_id = self.get_argument("event_id")
+    result = self.event.get_event(event_id)
     json = utils.jsonResult(result)
     self.write(json)
 
   def post(self):
-    name = self.get_argument("name")
-    description = self.get_argument("description")
-    scheduled_for = self.get_argument("scheduled_for")
-    expected_duration = self.get_argument("expected_duration")
-    registration_deadline = self.get_argument("registration_deadline")
-    location = self.get_argument("location")
-    hide_location = self.get_argument("hide_location")
-    registration_price = self.get_argument("registration_price")
-    creation_price = self.get_argument("creation_price")
-    is_active = self.get_argument("is_active")
-    phase = self.get_argument("phase")
+    params = {}
+    for param in self.request.arguments:
+      params[param] = self.request.arguments[param][0]
+    self.write(utils.json.dumps(params))
+
+    #CURL test
+    #curl -F "name=testiram" -F "description=ovo je description" -F "scheduled_for=2012-09-23T00:00:00" -F "expected_duration=17:00:00" -F "registration_deadline=2012-09-18T00:00:00" -F "location=Zagreb"  -F "hide_location=1" -F "registration_price=300" -F "creation_price=200" -F "is_active=1" -F "phase=before_event" localhost:8888/events/
 
     
