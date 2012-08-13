@@ -1,7 +1,7 @@
 import sqlalchemy
+from pprint import pprint as pp
 
 class Event:
-  
   def __init__(self, db):
     "Takes sqlalchemy connector"
     self.db = db
@@ -13,13 +13,17 @@ class Event:
     return self.table.select(self.table.c.event_id == event_id).execute()
 
   def add_event(self, params):
-    pass
+    "Creates a new event"
+    self.db.execute(self.table.insert().values(params))
 
   def delete_event(self, event_id):
-    pass
+    "Deletes event with event_id"
+    self.db.execute(self.table.delete().where(self.table.c.event_id == event_id))
 
-  def update_event(self, event_id):
-    pass
+  def update_event(self, event_id, params):
+    "Updates event with event_id"
+    self.db.execute(self.table.update().where(self.table.c.event_id == event_id)
+                    .values(params))
 
   def update_event_user(self, event_id, user_id):
     pass
