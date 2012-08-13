@@ -29,7 +29,7 @@ class EventsHandler(EventBase):
 
 
     #CURL test
-    #curl -F "name=testiram" -F "description=ovo je description" -F "scheduled_for=2012-09-23T00:00:00" -F "expected_duration=17:00:00" -F "registration_deadline=2012-09-18T00:00:00" -F "location=Zagreb"  -F "hide_location=1" -F "registration_price=300" -F "creation_price=200" -F "is_active=1" -F "phase=before_event" localhost:8888/events/
+    #curl -F "name=testiram" -F "description=ovo je description" -F "scheduled_for=2012-09-23T00:00:00" -F "expected_duration=17:00:00" -F "registration_deadline=2012-09-18T00:00:00" -F "location=Zagreb"  -F "hide_location=1" -F "registration_price=300" -F "creation_price=200" -F "is_active=1" -F "phase=before_event" localhost:8888/event/
 
 class EventHandler(EventBase):
   def get(self, event_id):
