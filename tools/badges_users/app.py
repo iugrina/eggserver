@@ -93,6 +93,11 @@ class GenerateTree(ProtoHandler):
 
     # root node always has id=0
     self.write( json.dumps( [ self.genTreeRec(x, parent_ids, R) for x in R[0]] ) )
+    
+class ListUsersHandler(ProtoHandler):
+  def get(self):
+    users = self.db.query("select * from users")
+    self.render("users.html", users=users, added_new=False, error=False)    
 
  
 # user egg is more secure than user root
@@ -110,6 +115,10 @@ application = tornado.web.Application([
   (r"/badges/add", AddNewBadgeHandler, dict(db=db)),
   (r"/badges/get/([^/]+)", GetBadgeHandler, dict(db=db)),
   (r"/badges/delete/([^/]+)", DeleteBadgeHandler, dict(db=db)),
+  (r"/users", ListUsersHandler, dict(db=db)),
+  #(r"/users/add", AddNewUserHandler, dict(db=db)),
+  #(r"/users/get/([^/]+)", GetUserHandler, dict(db=db)),
+  #(r"/users/delete/([^/]+)", DeleteUserHandler, dict(db=db)),
 ], **settings)
 
 if __name__ == "__main__":

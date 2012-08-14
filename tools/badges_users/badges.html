@@ -14,11 +14,11 @@
     .hierarchy-tree-line { padding: 0 5px; }
     #badges-tree { display: none; }
     #badge-details-container { position: absolute; width: 300px; height: 200px; background: gray; left: 800px; padding: 20px; opacity: 0.9; border: 1px solid black; border-radius: 3px; }
-    #add-new-form { margin-top: 40px; }
+    .add-new-form { margin-top: 40px; }
   </style>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
   <script type="text/javascript" src="{{ static_url("bootstrap/js/bootstrap.min.js") }}"></script>
-  <script type="text/javascript" src="{{ static_url("js/badges.js") }}"></script>
+  <script type="text/javascript" src="{{ static_url("js/badges_users.js") }}"></script>
 </head>
 <body>
   <div class="container">
@@ -36,7 +36,7 @@
               <ul class="nav">
                 <li class="home-link"><a href="/">Home</a></li>
                 <li class="active"><a href="/badges">Badges</a></li>
-                <li class=""><a href="#" id="">Users</a></li>
+                <li><a href="users" id="">Users</a></li>
               </ul>
             </div><!-- /.nav-collapse -->
           </div>
@@ -56,10 +56,10 @@
       </div>
       {% end %}
       
-      <a href="#" class="btn add-new-link" id="add-new-button"><i class="icon-plus-sign"></i> Add new</a>
+      <a href="#" class="btn add-new-link add-new-button"><i class="icon-plus-sign"></i> Add new</a>
       <a href="#" class="btn tree-link"><i class="icon-tasks"></i> Show Tree</a>
       
-      <form name="add-new" method="post" action="/badges/add" enctype="multipart/form-data" class="form-horizontal hide" id="add-new-form">
+      <form name="add-new" method="post" action="/badges/add" enctype="multipart/form-data" class="form-horizontal hide add-new-form" id="">
         <fieldset>
           <div class="control-group">
             <label class="control-label" for="input01">Name</label>
@@ -105,7 +105,7 @@
           </div>
           <div class="form-actions">
             <button type="submit" class="btn btn-primary add-new-submit">Save changes</button>
-            <button class="btn" id="add-new-cancel">Cancel</button>
+            <button class="btn add-new-cancel">Cancel</button>
           </div>
         </fieldset>
       </form>

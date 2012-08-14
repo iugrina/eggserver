@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Users</title>
+  <link href="{{ static_url("bootstrap/css/bootstrap.min.css") }}" rel="stylesheet" />
+  
+  <style type="text/css">
+    #content-container { margin-top: 20px; }
+    .table { margin-top: 50px; }
+    #multiSelect { width: 350px; }
+    .alert-success, .alert-error { width: 370px; margin-top: 20px; }
+    .delete-user-row, .edit-user-row { width: 30px; }
+    #user-details-container { position: absolute; width: 300px; height: 200px; background: gray; left: 800px; padding: 20px; opacity: 0.9; border: 1px solid black; border-radius: 3px; }
+    .add-new-form { margin-top: 40px; }
+  </style>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="{{ static_url("bootstrap/js/bootstrap.min.js") }}"></script>
+  <script type="text/javascript" src="{{ static_url("js/badges_users.js") }}"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="row" id="content-container">
+      <div class="navbar">
+        <div class="navbar-inner">
+          <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href="/">Badges & Users</a>
+            <div class="nav-collapse">
+              <ul class="nav">
+                <li class="home-link"><a href="/">Home</a></li>
+                <li><a href="badges">Badges</a></li>
+                <li class="active"><a href="users" id="">Users</a></li>
+              </ul>
+            </div><!-- /.nav-collapse -->
+          </div>
+        </div><!-- /navbar-inner -->
+      </div>
+        
+      {% if added_new %}
+      <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>Well done!</strong> You successfully added new user!
+      </div>
+      {% end %}
+      {% if error %}
+      <div class="alert alert-error">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>Oh snap!</strong> Change a few things up and try again.
+      </div>
+      {% end %}
+      
+      <a href="#" class="btn add-new-link add-new-button"><i class="icon-plus-sign"></i> Add new</a>
+      
+      <form name="add-new" method="post" action="/users/add" enctype="multipart/form-data" class="form-horizontal hide add-new-form">
+        <fieldset>
+          <div class="control-group">
+            <label class="control-label" for="first_name">First Name</label>
+            <div class="controls">
+              <input name="first_name" type="text" class="input-xlarge" id="first_name">
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="last_name">Last Name</label>
+            <div class="controls">
+              <input name="last_name" type="text" class="input-xlarge" id="last_name">
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="email">Last Name</label>
+            <div class="controls">
+              <input name="email" type="text" class="input-xlarge" id="email">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary add-new-submit">Save changes</button>
+            <button class="btn add-new-cancel">Cancel</button>
+          </div>
+        </fieldset>
+      </form>
+        
+      {% if len(users) is 0 %}
+        <p>No users in database.</p>
+      {% else %}
+        <table class="table table-striped" id="users-list">
+          <thead>
+            <tr>
+              <th>userID</th>
+              <th>first name</th>
+              <th>last name</th>
+              <th>email</th>
+              <th class="delete-user-row"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+              <tr>
+                <td>{{ user.user_id }}</td>
+                <td>{{ user.first_name }}</td>
+                <td>{{ user.last_name }}</td>
+                <td>{{ user.email }}</td>
+                <td><a class="btn btn-danger btn-delete-user hide" title="Delete user" id="bid-{{ user.user_id }}"><i class="icon-trash icon-white"></i></a></td>
+              </tr>
+            {% end %}
+          </tbody>
+        </table>
+      {% end %}
+    </div>
+  </div>
+  
+  <div class="modal hide" id="delete-user-modal">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">×</button>
+      <h3>Warning:</h3>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete this user? This action cannot be reverted.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+      <a href="#" class="btn btn-danger btn-delete-user-confirm"><i class="icon-trash icon-white"></i> Delete</a>
+    </div>
+  </div>
+</body>
+</html>

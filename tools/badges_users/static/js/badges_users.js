@@ -1,12 +1,12 @@
 $(function() {
-  $("#add-new-button").click(function() {
+  $(".add-new-button").click(function() {
     $(".alert").hide();
-    $("#add-new-form").toggle('slow');
+    $(".add-new-form").toggle('slow');
     return false;
   });
   
-  $("#add-new-cancel").click(function() {
-    $("#add-new-form").hide('slow');
+  $(".add-new-cancel").click(function() {
+    $(".add-new-form").hide('slow');
     return false;
   });
   
@@ -40,7 +40,7 @@ $(function() {
     $("#badges-tree").hide();
     $(".active").removeClass("active");
     $(this).addClass("active");
-    $("#add-new-form").hide('slow');
+    $(".add-new-form").hide('slow');
   });
   
   $(".tree-link").click(function() {
@@ -49,14 +49,14 @@ $(function() {
       $("#badges-tree").hide();
       $(this).removeClass("active");
       $(this).text(" Show Tree");
-      $("#add-new-form").hide('slow');
+      $(".add-new-form").hide('slow');
     } else {
       $("#badges-list").hide();
       $(".home-link").removeClass("active");
       $("#badges-tree").show();
       $(this).addClass("active");
       $(this).text(" Hide Tree");
-      $("#add-new-form").hide('slow');
+      $(".add-new-form").hide('slow');
     
       // Render tree
       $.get('tree/get', function(data) {
