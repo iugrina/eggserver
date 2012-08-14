@@ -29,9 +29,25 @@ $(function() {
   $(".btn-delete-badge-confirm").click(function() {
     bid = $(this).attr("id").slice(4);
     $.get('/badges/delete/' + bid, function(data) {
-      window.location = "/";
+      window.location = "/badges";
     });
     $('#delete-badge-modal').modal('hide');
+    return false;
+  });
+  
+  $(".btn-delete-user").click(function() {
+    bid = "bid-" + $(this).attr("id").slice(4);
+    $("#delete-user-modal .btn-delete-user-confirm").attr("id", bid);
+    $('#delete-user-modal').modal('show');
+    return false;
+  });
+  
+  $(".btn-delete-user-confirm").click(function() {
+    bid = $(this).attr("id").slice(4);
+    $.get('/users/delete/' + bid, function(data) {
+      window.location = "/users";
+    });
+    $('#delete-user-modal').modal('hide');
     return false;
   });
   

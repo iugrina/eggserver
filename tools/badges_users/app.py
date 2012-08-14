@@ -97,7 +97,37 @@ class GenerateTree(ProtoHandler):
 class ListUsersHandler(ProtoHandler):
   def get(self):
     users = self.db.query("select * from users")
-    self.render("users.html", users=users, added_new=False, error=False)    
+    self.render("users.html", users=users, added_new=False, error=False)
+    
+class AddNewUserHandler(ProtoHandler):      
+  def post(self):
+    try:
+      first_name = self.get_argument("first_name")
+      last_name = self.get_argument("last_name")
+      email = self.get_argument("email")
+      
+      if first_name and last_name and email:
+        self.db.execute(
+            "INSERT INTO users (first_name, last_name, email) "
+            "VALUES (%s, %s, %s)",
+            first_name, last_name, email)
+        
+        users = self.db.query("select * from users")
+        self.render("users.html", users=users, added_new=True, error=False)
+      else:
+        raise Exception
+    except Exception:
+      users = self.db.query("select * from users")
+      self.render("users.html", users=users, added_new=False, error=True)
+      
+class DeleteUserHandler(ProtoHandler):
+  def get(self, uid):
+    try:
+      self.db.execute("delete from users where user_id=%s", uid)
+      
+    except Exception:
+      users = self.db.query("select * from users")
+      self.render("users.html", users=users, added_new=False, error=True)      
 
  
 # user egg is more secure than user root
@@ -116,9 +146,8 @@ application = tornado.web.Application([
   (r"/badges/get/([^/]+)", GetBadgeHandler, dict(db=db)),
   (r"/badges/delete/([^/]+)", DeleteBadgeHandler, dict(db=db)),
   (r"/users", ListUsersHandler, dict(db=db)),
-  #(r"/users/add", AddNewUserHandler, dict(db=db)),
-  #(r"/users/get/([^/]+)", GetUserHandler, dict(db=db)),
-  #(r"/users/delete/([^/]+)", DeleteUserHandler, dict(db=db)),
+  (r"/users/add", AddNewUserHandler, dict(db=db)),
+  (r"/users/delete/([^/]+)", DeleteUserHandler, dict(db=db)),
 ], **settings)
 
 if __name__ == "__main__":
