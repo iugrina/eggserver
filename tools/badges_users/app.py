@@ -13,6 +13,10 @@ class ProtoHandler(tornado.web.RequestHandler):
 
 class MainHandler(ProtoHandler):
   def get(self):
+    self.render("menu.html")
+    
+class ListBadgesHandler(ProtoHandler):
+  def get(self):
     badges = self.db.query("select * from badges")
     self.render("badges.html", badges=badges, added_new=False, error=False)
     
@@ -53,7 +57,7 @@ class GetBadgeHandler(ProtoHandler):
       
     self.write(json.dumps(result))
       
-class DeleteBadgeHandler1(ProtoHandler):
+class DeleteBadgeHandler(ProtoHandler):
   def get(self, bid):
     try:
       result = self.db.query("select image_link from badges where badge_id=%s", bid)
@@ -102,6 +106,7 @@ settings = {
 application = tornado.web.Application([
   (r"/", MainHandler, dict(db=db)),
   (r"/tree/get", GenerateTree, dict(db=db)),
+  (r"/badges", ListBadgesHandler, dict(db=db)),
   (r"/badges/add", AddNewBadgeHandler, dict(db=db)),
   (r"/badges/get/([^/]+)", GetBadgeHandler, dict(db=db)),
   (r"/badges/delete/([^/]+)", DeleteBadgeHandler, dict(db=db)),

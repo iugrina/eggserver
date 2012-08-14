@@ -37,25 +37,32 @@ $(function() {
   
   $(".home-link").click(function() {
     $("#badges-list").show();
-    $(".home-link").addClass("active");
     $("#badges-tree").hide();
-    $(".tree-link").removeClass("active");
+    $(".active").removeClass("active");
+    $(this).addClass("active");
     $("#add-new-form").hide('slow');
-    return false;
   });
   
   $(".tree-link").click(function() {
-    $("#badges-list").hide();
-    $(".home-link").removeClass("active");
-    $("#badges-tree").show();
-    $(".tree-link").addClass("active");
-    $("#add-new-form").hide('slow');
-  
-    // Render tree
-    $.get('tree/get', function(data) {
-      renderTree(data);
-    });
+    if ($(this).hasClass("active")) {
+      $("#badges-list").show();
+      $("#badges-tree").hide();
+      $(this).removeClass("active");
+      $(this).text(" Show Tree");
+      $("#add-new-form").hide('slow');
+    } else {
+      $("#badges-list").hide();
+      $(".home-link").removeClass("active");
+      $("#badges-tree").show();
+      $(this).addClass("active");
+      $(this).text(" Hide Tree");
+      $("#add-new-form").hide('slow');
     
+      // Render tree
+      $.get('tree/get', function(data) {
+        renderTree(data);
+      });
+    }
     return false;
   });
 });
