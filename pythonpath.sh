@@ -1,4 +1,6 @@
+#!/bin/bash
 # use source to read this file !
 
-APP=`pwd`"/app"
-export PYTHONPATH="${APP}:${PYTHONPATH}"
+ROOT=`dirname ${BASH_SOURCE[0]}`
+APP=${ROOT}"/app"
+export PYTHONPATH="${ROOT}:${APP}:${PYTHONPATH}"
