@@ -2,3 +2,4 @@
 db_schema/.yoyo-migrate
 *.pyc
 tools/badges_frontend/thumb
+confegg/app.json
