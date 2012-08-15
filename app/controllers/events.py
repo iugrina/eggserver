@@ -14,7 +14,7 @@ class EventBase(tornado.web.RequestHandler):
     "returns params dictionary"
     params = {}
     for param in self.request.arguments:
-      params[param] = self.request.arguments[param]
+      params[param] = self.request.arguments[param][0]
 
     return params
 
@@ -40,6 +40,7 @@ class EventHandler(EventBase):
     "Retrieves event with event_id"
     try:
       result = self.event.get_event(int(event_id))
+      print result.fetchone()
       json = utils.jsonResult(result)
       self.write(json)
     #validation error
