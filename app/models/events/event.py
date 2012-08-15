@@ -22,14 +22,13 @@ class Event:
   def add_event(self, params):
     "Creates a new event"
     EventSchema.validate_params(params)
-    #self.db.execute(self.mysqlTable.events.insert().values(params))
+    self.db.execute(self.mysqlTable.events.insert().values(params))
 
   def delete_event(self, event_id):
     "Deletes event with event_id"
     EventSchema.validate_int(event_id)
     if self.get_event(event_id).rowcount == 1:
-      #self.db.execute(self.mysqlTable.events.delete().where(self.mysqlTable.events.c.event_id == event_id))
-      pass
+      self.db.execute(self.mysqlTable.events.delete().where(self.mysqlTable.events.c.event_id == event_id))
     raise egg_errors.QueryNotPossible
 
   def update_event(self, event_id, params):

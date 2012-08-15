@@ -40,7 +40,6 @@ class EventHandler(EventBase):
     "Retrieves event with event_id"
     try:
       result = self.event.get_event(int(event_id))
-      print result.fetchone()
       json = utils.jsonResult(result)
       self.write(json)
     #validation error
