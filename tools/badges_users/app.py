@@ -99,7 +99,7 @@ class ListUsersHandler(ProtoHandler):
     users = self.db.query("select * from users")
     self.render("users.html", users=users, added_new=False, error=False)
     
-class AddNewUserHandler(ProtoHandler):      
+class AddNewUserHandler(ProtoHandler):
   def post(self):
     try:
       first_name = self.get_argument("first_name")
@@ -127,7 +127,34 @@ class DeleteUserHandler(ProtoHandler):
       
     except Exception:
       users = self.db.query("select * from users")
-      self.render("users.html", users=users, added_new=False, error=True)      
+      self.render("users.html", users=users, added_new=False, error=True)
+      
+class BadgesInUsersHandler(ProtoHandler):
+  def get(self):
+    users = self.db.query("select * from users")
+    badges = self.db.query("select * from badges")
+    badges_in_users = self.db.query("select * from badges_users")
+    self.render("badges_in_users.html", badges_in_users=badges_in_users, users=users, badges=badges, updated=False, error=False)
+    
+  def post(self):
+    # If somebody knows better solution - be my guest
+    self.db.execute("delete from badges_users")
+    for param in self.request.arguments:
+      user_id = param[16:]
+      print user_id
+      for x in range(len(self.request.arguments[param])):
+        badge_id = self.request.arguments[param][x]
+        print badge_id
+        
+        self.db.execute(
+            "INSERT INTO badges_users (user_id, badge_id) "
+            "VALUES (%s, %s) ",
+            user_id, badge_id)
+    
+    users = self.db.query("select * from users")
+    badges = self.db.query("select * from badges")
+    badges_in_users = self.db.query("select * from badges_users")
+    self.render("badges_in_users.html", badges_in_users=badges_in_users, users=users, badges=badges, updated=True, error=False)
 
  
 # user egg is more secure than user root
@@ -148,6 +175,7 @@ application = tornado.web.Application([
   (r"/users", ListUsersHandler, dict(db=db)),
   (r"/users/add", AddNewUserHandler, dict(db=db)),
   (r"/users/delete/([^/]+)", DeleteUserHandler, dict(db=db)),
+  (r"/badges-in-users", BadgesInUsersHandler, dict(db=db)),
 ], **settings)
 
 if __name__ == "__main__":
