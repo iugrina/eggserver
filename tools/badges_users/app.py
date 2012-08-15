@@ -141,14 +141,12 @@ class BadgesInUsersHandler(ProtoHandler):
     self.db.execute("delete from badges_users")
     for param in self.request.arguments:
       user_id = param[16:]
-      print user_id
       for x in range(len(self.request.arguments[param])):
         badge_id = self.request.arguments[param][x]
-        print badge_id
         
         self.db.execute(
             "INSERT INTO badges_users (user_id, badge_id) "
-            "VALUES (%s, %s) ",
+            "VALUES (%s, %s)",
             user_id, badge_id)
     
     users = self.db.query("select * from users")
