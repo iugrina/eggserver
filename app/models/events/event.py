@@ -14,7 +14,11 @@ class Event:
 
   def get_event(self, event_id):
     "Returns event with event_id"
-    return self.mysqlTable.events.select(self.mysqlTable.events.c.event_id == event_id).execute()
+    EventSchema.get_event(event_id)
+    result = self.mysqlTable.events.select(self.mysqlTable.events.c.event_id == event_id).execute()
+    if result.rowcount == 1:
+      return result
+    raise egg_errors.QueryNotPossible
 
   def add_event(self, params):
     "Creates a new event"
@@ -22,7 +26,7 @@ class Event:
 
   def delete_event(self, event_id):
     "Deletes event with event_id"
-    EventSchema.delete_event(int(event_id))
+    EventSchema.delete_event(event_id)
     if self.get_event(event_id).rowcount == 1:
       self.db.execute(self.mysqlTable.events.delete().where(self.mysqlTable.events.c.event_id == event_id))
     raise egg_errors.QueryNotPossible

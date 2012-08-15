@@ -38,14 +38,10 @@ class EventHandler(EventBase):
   API endpoint: /event/:id"""
   def get(self, event_id):
     "Retrieves event with event_id"
-    result = self.event.get_event(event_id)
-    json = utils.jsonResult(result)
-    self.write(json)
-
-  def delete(self, event_id):
-    "Removed event with event_id"
     try:
-      self.event.delete_event(event_id)
+      result = self.event.get_event(int(event_id))
+      json = utils.jsonResult(result)
+      self.write(json)
     #validation error
     except val.InvalidList as e:
       self.write(utils.json.dumps(str(e)))
@@ -53,7 +49,17 @@ class EventHandler(EventBase):
     except egg_errors.QueryNotPossible as e:
       self.write(e.get_json())
 
-      
+  def delete(self, event_id):
+    "Removed event with event_id"
+    try:
+      self.event.delete_event(int(event_id))
+    #validation error
+    except val.InvalidList as e:
+      self.write(utils.json.dumps(str(e)))
+    #query error
+    except egg_errors.QueryNotPossible as e:
+      self.write(e.get_json())
+
 
   def put(self, event_id):
     "Updates event information"

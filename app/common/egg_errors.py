@@ -32,7 +32,7 @@ class QueryNotPossible(BaseException):
   def __init__(self):
     BaseException.__init__(self)
     self.error_code = 1000
-    self.error_message = u"Error"
+    self.error_message = u"Query failed"
 
 #
 # Basket mangling exceptions 10000-10199
