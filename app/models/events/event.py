@@ -1,5 +1,9 @@
 import sqlalchemy
 from common.mysqlTables import MySQLTables
+from common import egg_errors
+import schema as EventSchema
+from lib.voluptuous import voluptuous as val
+
 
 class Event:
   def __init__(self, db):
@@ -18,7 +22,10 @@ class Event:
 
   def delete_event(self, event_id):
     "Deletes event with event_id"
-    self.db.execute(self.mysqlTable.events.delete().where(self.mysqlTable.events.c.event_id == event_id))
+    EventSchema.delete_event(int(event_id))
+    if self.get_event(event_id).rowcount == 1:
+      self.db.execute(self.mysqlTable.events.delete().where(self.mysqlTable.events.c.event_id == event_id))
+    raise egg_errors.QueryNotPossible
 
   def update_event(self, event_id, params):
     "Updates event with event_id"
