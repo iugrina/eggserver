@@ -1,0 +1,19 @@
+{
+  "mysql": {
+    "host": "localhost",
+    "port": 3306,
+    "database": "eggdb",
+    "username": "egg",
+    "password": "egg"
+  },
+  "mongo": {
+    "host": "localhost",
+    "port": 27017,
+    "database": "egg"
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379
+  },
+  "env": {}
+}
