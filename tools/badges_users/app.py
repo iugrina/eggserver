@@ -6,6 +6,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.database
 from tornado import autoreload
+import confegg
 
 class ProtoHandler(tornado.web.RequestHandler):
   def initialize(self, db):
@@ -18,10 +19,12 @@ class MainHandler(ProtoHandler):
 class ListBadgesHandler(ProtoHandler):
   def get(self):
     badges = self.db.query("select * from badges")
-    self.render("badges.html", badges=badges, added_new=False, error=False)
+    static_vhost = conf['env']['static_vhost']
+    self.render("badges.html", badges=badges, static_vhost=static_vhost, added_new=False, error=False)
     
 class AddNewBadgeHandler(ProtoHandler):
   def post(self):
+    static_vhost = conf['env']['static_vhost']
     try:
       name = self.get_argument("name")
       description = self.get_argument("description")
@@ -30,7 +33,8 @@ class AddNewBadgeHandler(ProtoHandler):
       
       if self.request.files:
         filename = self.request.files['image'][0]['filename']
-        path = "./thumb/" + filename
+        static_path = conf['env']['static_path']
+        path = static_path + '/images/bubbles/' + filename
         directory = os.path.dirname(path)
         if not os.path.exists(directory):
           os.makedirs(directory)
@@ -44,25 +48,30 @@ class AddNewBadgeHandler(ProtoHandler):
             name, filename, description, parent, type)
         
         badges = self.db.query("select * from badges")
-        self.render("badges.html", badges=badges, added_new=True, error=False)
+        
+        self.render("badges.html", badges=badges, static_vhost=static_vhost, added_new=True, error=False)
       else:
         raise Exception
     except Exception:
       badges = self.db.query("select * from badges")
-      self.render("badges.html", badges=badges, added_new=False, error=True)
+      self.render("badges.html", badges=badges, static_vhost=static_vhost, added_new=False, error=True)
       
 class GetBadgeHandler(ProtoHandler):
   def get(self, bid):
     result = self.db.query("select * from badges where badge_id=%s", bid)
+    # Add static vhost info to result so we can display image
+    result[0]['static_vhost'] = conf['env']['static_vhost']
       
     self.write(json.dumps(result))
       
 class DeleteBadgeHandler(ProtoHandler):
   def get(self, bid):
+    static_vhost = conf['env']['static_vhost']
     try:
       result = self.db.query("select image_link from badges where badge_id=%s", bid)
       filename = result[0]['image_link']
-      path = "./thumb/" + filename
+      static_path = conf['env']['static_path']
+      path = static_path + '/images/bubbles/' + filename
       if os.path.isfile(path):
         os.remove(path)
         
@@ -70,7 +79,7 @@ class DeleteBadgeHandler(ProtoHandler):
       
     except Exception:
       badges = self.db.query("select * from badges")
-      self.render("badges.html", badges=badges, added_new=False, error=True)
+      self.render("badges.html", badges=badges, static_vhost=static_vhost, added_new=False, error=True)
 
 class GenerateTree(ProtoHandler):
   def genTreeRec( self, x, parent_ids, R ) :
@@ -154,9 +163,8 @@ class BadgesInUsersHandler(ProtoHandler):
     badges_in_users = self.db.query("select * from badges_users")
     self.render("badges_in_users.html", badges_in_users=badges_in_users, users=users, badges=badges, updated=True, error=False)
 
- 
-# user egg is more secure than user root
-db = tornado.database.Connection("localhost", "eggdb", user="egg", password="")
+conf = confegg.get_config()
+db = tornado.database.Connection(conf['mysql']['host'], conf['mysql']['database'], user=conf['mysql']['username'], password=conf['mysql']['password'])
 
 settings = {
   "debug": True,

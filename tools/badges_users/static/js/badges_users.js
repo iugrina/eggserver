@@ -60,6 +60,7 @@ $(function() {
   });
   
   $(".tree-link").click(function() {
+    $("#badge-details-container").remove();
     if ($(this).hasClass("active")) {
       $("#badges-list").show();
       $("#badges-tree").hide();
@@ -122,11 +123,22 @@ function renderBadgeDetails() {
         var container = $("#badges-container");
         var badgeDetails = '';
         
+        if (badge[0].type == "1") {
+          var type = '(1) not important - children important - only one child';
+        } else if (badge[0].type == "2") {
+          var type = '(2) important - no children';
+        } else if (badge[0].type == "3") {
+          var type = '(3) important - children';
+        } else if (badge[0].type == "4") {
+          var type = '(4) not important - children important - multiple children';
+        }
+        
         badgeDetails += '<div id="badge-details-container">';
         badgeDetails += '<h2>' + badge[0].name + '</h2>';
         badgeDetails += '<p><strong>id: </strong>' + badge[0].badge_id + '</p>';
         badgeDetails += '<p><strong>description: </strong>' + badge[0].description + '</p>';
-        badgeDetails += '<p><strong>type: </strong>' + badge[0].type + '</p>';
+        badgeDetails += '<p><strong>type: </strong>' + type + '</p>';
+        badgeDetails += '<img src="http://' + badge[0].static_vhost + "/images/bubbles/" + badge[0].image_link + '" class="details-image" />';
         badgeDetails += '</div>';
         
         container.append(badgeDetails);
