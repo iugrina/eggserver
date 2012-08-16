@@ -14,7 +14,7 @@ class EventBase(tornado.web.RequestHandler):
     "returns params dictionary"
     params = {}
     for param in self.request.arguments:
-      params[param] = self.request.arguments[param]
+      params[param] = self.request.arguments[param][0]
 
     return params
 
@@ -70,13 +70,36 @@ class EventUserHandler(EventBase):
   """Handles interaction between user and event
   API endpoint /event/:id/user/:id"""
   def post(self, event_id, user_id):
-    self.event.add_event_user(event_id, user_id, self.params)
-    self.write(utils.json.dumps(self.params))
+    try:
+      self.event.add_event_user(event_id, user_id, self.params)
+      self.write(utils.json.dumps(self.params))
+    #validation error
+    except val.InvalidList as e:
+      self.write(utils.json.dumps(str(e)))
+    #query error
+    except egg_errors.QueryNotPossible as e:
+      self.write(e.get_json())
 
     #curl -X POST -F "participant_type=guest" -F "attending=yes" -F "other_participant_type=random" localhost:8888/event/10/user/2
   
   def delete(self, event_id, user_id):
-    self.event.delete_event_user(event_id, user_id)
+    try:
+      self.event.delete_event_user(event_id, user_id)
+    #validation error
+    except val.InvalidList as e:
+      self.write(utils.json.dumps(str(e)))
+    #query error
+    except egg_errors.QueryNotPossible as e:
+      self.write(e.get_json())
+
 
   def put(self, event_id, user_id):
-    self.event.update_event_user(event_id, user_id, self.params)
+    try:
+      self.event.update_event_user(event_id, user_id, self.params)
+    #validation error
+    except val.InvalidList as e:
+      self.write(utils.json.dumps(str(e)))
+    #query error
+    except egg_errors.QueryNotPossible as e:
+      self.write(e.get_json())
+
