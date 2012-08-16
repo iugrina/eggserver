@@ -15,5 +15,8 @@
     "host": "localhost",
     "port": 6379
   },
-  "env": {}
+  "env": {
+    "static_path": "apsolute path to your static directory",
+    "static_vhost" : "name of your virtual host pointing to the static_path defined above"
+  }
 }
