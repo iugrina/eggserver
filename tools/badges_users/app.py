@@ -6,6 +6,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.database
 from tornado import autoreload
+import confegg
 
 class ProtoHandler(tornado.web.RequestHandler):
   def initialize(self, db):
@@ -154,9 +155,8 @@ class BadgesInUsersHandler(ProtoHandler):
     badges_in_users = self.db.query("select * from badges_users")
     self.render("badges_in_users.html", badges_in_users=badges_in_users, users=users, badges=badges, updated=True, error=False)
 
- 
-# user egg is more secure than user root
-db = tornado.database.Connection("localhost", "eggdb", user="egg", password="")
+conf = confegg.get_config()
+db = tornado.database.Connection(conf['mysql']['host'], conf['mysql']['database'], user=conf['mysql']['username'], password=conf['mysql']['password'])
 
 settings = {
   "debug": True,
