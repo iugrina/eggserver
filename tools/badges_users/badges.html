@@ -9,12 +9,14 @@
     #badges-container { margin-top: 20px; }
     .table { margin-top: 50px; }
     #multiSelect { width: 350px; }
-    .alert-success, .alert-error { width: 370px; margin-top: 20px; }
+    .alert-success, .alert-error { margin-top: 20px; }
     .delete-badge-row, .edit-badge-row { width: 30px; }
     .hierarchy-tree-line { padding: 0 5px; }
     #badges-tree { display: none; }
-    #badge-details-container { position: absolute; width: 300px; height: 200px; background: gray; left: 800px; padding: 20px; opacity: 0.9; border: 1px solid black; border-radius: 3px; }
+    #badge-details-container { position: absolute; width: 300px; height: 250px; background: #8F7; left: 800px; padding: 20px; opacity: 0.9; border: 1px solid black; border-radius: 3px; }
     .add-new-form { margin-top: 40px; }
+    .list-image { max-width: 70px; }
+    .details-image { max-width: 150px; }
   </style>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
   <script type="text/javascript" src="{{ static_url("bootstrap/js/bootstrap.min.js") }}"></script>
@@ -43,7 +45,7 @@
           </div>
         </div><!-- /navbar-inner -->
       </div>
-        
+      
       {% if added_new %}
       <div class="alert alert-success">
         <button type="button" class="close" data-dismiss="alert">×</button>
@@ -131,10 +133,20 @@
               <tr>
                 <td>{{ badge.badge_id }}</td>
                 <td>{{ badge.name }}</td>
-                <td>{{ badge.image_link }}</td>
+                <td><img src="http://{{ static_vhost }}/images/bubbles/{{ badge.image_link }}" class="list-image" /></td>
                 <td>{{ badge.description }}</td>
                 <td>{{ badge.parent }}</td>
-                <td>{{ badge.type }}</td>
+                <td>
+                  {% if badge.type is 1 %}
+                    <p>(1) not important - children important - only one child</p>
+                  {% elif badge.type is 2 %}
+                    <p>(2) important - no children</p>
+                  {% elif badge.type is 3 %}
+                    <p>(3) important - children</p>
+                  {% elif badge.type is 4 %}
+                    <p>(4) not important - children important - multiple children</p>
+                  {% end %}
+                </td>
                 <td><a class="btn btn-danger btn-delete-badge hide" title="Delete badge" id="bid-{{ badge.badge_id }}"><i class="icon-trash icon-white"></i></a></td>
               </tr>
             {% end %}
