@@ -2,16 +2,17 @@ import tornado.ioloop
 import tornado.web
 
 from tornado.options import options
-import settings
 import sqlalchemy
 import controllers
 from common import utils
+import confegg
 
 class Application(tornado.web.Application):
   def __init__(self):
-    self.db = sqlalchemy.create_engine(options.engine + "://" + options.user + ":" +
-                                       options.password + "@" + options.host + "/" +
-                                       options.database)
+    conf = confegg.get_config()
+    self.db = sqlalchemy.create_engine("mysql://" + conf['mysql']['username'] + ":" +
+                                       conf['mysql']['password'] + "@" + conf['mysql']['host'] + "/" +
+                                       conf['mysql']['database'])
     self.db.metadata  = sqlalchemy.MetaData(bind=self.db)
     #self.db.echo = "debug"
 
@@ -30,5 +31,5 @@ class Application(tornado.web.Application):
 
 if __name__ == "__main__":
   app = Application()
-  app.listen(options.port)
+  app.listen(8888)
   tornado.ioloop.IOLoop.instance().start()
