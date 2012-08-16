@@ -20,7 +20,7 @@ class Event:
 
   def add_event(self, params):
     "Creates a new event"
-    EventSchema.validate_params(params)
+    EventSchema.validate_events(params)
     self.db.execute(self.mysqlTable.events.insert().values(params))
     
 
@@ -34,7 +34,7 @@ class Event:
 
   def update_event(self, event_id, params):
     "Updates event with event_id"
-    EventSchema.validate_params(params)
+    EventSchema.validate_events(params)
     if self.get_event(event_id).rowcount == 1:
       self.db.execute(self.mysqlTable.events.update().where(self.mysqlTable.events.c.event_id == event_id)
                       .values(params))
@@ -45,9 +45,13 @@ class Event:
     "Adds new user to event"
     params["event_id"] = event_id
     params["user_id"] = user_id
+    EventSchema.validate_event_participants(params)
     self.db.execute(self.mysqlTable.event_participants.insert().values(params))
 
   def update_event_user(self, event_id, user_id, params):
+    params["event_id"] = event_id
+    params["user_id"] = user_id
+    EventSchema.validate_event_participans(params)
     self.db.execute(self.mysqlTable.event_participants.update().where(
         self.mysqlTable.event_participants.c.event_id == event_id).where(
         self.mysqlTable.event_participants.c.user_id == user_id).values(params))
@@ -55,8 +59,8 @@ class Event:
   def delete_event_user(self, event_id, user_id):
     "Removes user from event"
     self.db.execute(self.mysqlTable.event_participants.delete().where(
-        self.mysqlTable.event_participants.c.event_id == event_id).where(
-        self.mysqlTable.event_participants.c.user_id == user_id))
+        self.mysqlTable.event_participants.c.event_id == int(event_id)).where(
+        self.mysqlTable.event_participants.c.user_id == int(user_id)))
 
   def add_event_rating(self, event_id, rating):
     pass

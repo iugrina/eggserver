@@ -6,14 +6,14 @@ def validate_int(obj):
   schema = val.Schema(int, required=True)
   return schema(obj)
 
-def validate_params(obj):
+def validate_events(obj):
   schema = val.Schema({
-      "name": val.all(str, val.length(min=1, max=255)),
-      "description": val.all(str, val.length(min=1, max=2000)),
+      "name": val.all(str, val.length(max=255)),
+      "description": val.all(str, val.length(max=2000)),
       "scheduled_for": datetime.datetime,
       "expected_duration": datetime.time,
       "registration_deadline": datetime.datetime,
-      "location": val.all(str, val.length(min=1, max=255)),
+      "location": val.all(str, val.length(max=255)),
       "hide_location": val.all(int, val.range(min=0, max=1)),
       "registration_price": decimal.Decimal,
       "creation_price": decimal.Decimal,
@@ -37,4 +37,20 @@ def validate_params(obj):
     obj["creation_price"] = decimal.Decimal(obj["creation_price"])
   if "is_active" in obj:
     obj["is_active"] = int(obj["is_active"])
+  schema(obj)
+
+def validate_event_participants(obj):
+  schema = val.Schema({
+      "event_id": val.all(int, val.length(max=20)),
+      "user_id": val.all(int, val.length(max=20)),
+      "participant_type": val.any("organizer", "guest", "other"),
+      "attending": val.any("yes", "no", "maybe", "unaccepted", "undecided"),
+      "other_participant_type": val.any("random", "guest_decision")
+  })
+
+  if "event_id" in obj:
+    obj["event_id"] = int(obj("event_id"))
+  if "user_id" in obj:
+    obj["user_id"] = int(obj("user_id"))
+
   schema(obj)

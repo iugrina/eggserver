@@ -27,7 +27,14 @@ class EventsHandler(EventBase):
 
   def post(self):
     "Creates a new event"
-    self.event.add_event(self.params)
+    try:
+      self.event.add_event(self.params)
+    #validation error
+    except val.InvalidList as e:
+      self.write(utils.json.dumps(str(e)))
+    #query error
+    except egg_errors.QueryNotPossible as e:
+      self.write(e.get_json())
 
 
     #CURL test
