@@ -8,8 +8,32 @@ class Profile:
     self.db = db
     self.table = sqlalchemy.Table("users", self.db.metadata, autoload=True)
     self.mysql_tables = MySQLTables(db)
+  
+  def get_user(self, user_id):
+    "Returns user with user_id"
+    result = self.mysqlTable.users.select(select.mysqlTable.users.c.user_id == user_id).execute()
+    if result.rowcount == 1:
+      return result
+    raise egg_errors.QueryNotPossible
 
   def add_user(self, params):
-    """ TODO """
+    "Creates a new user"
     profile_schema.validate(params)
-    self.db.execute(self.table.insert().values(params))
+    self.db.execute(self.mysqlTable.users.insert().values(params))
+
+  def delete_user(self, user_id):
+    "Deletes user with user_id"
+    userSchema.validate_int(user_id)
+    if self.get_user(user_id).rowcount == 1:
+      self.db.execute(self.mysqlTable.users.delete().where(self.mysqlTable.users.c.user_id == user_id))
+    else:
+      raise egg_errors.QueryNotPossible
+
+  def update_user(self, user_id, params):
+    "Updates user with user_id"
+    userSchema.validate_users(params)
+    if self.get_user(user_id).rowcount == 1:
+      self.db.execute(self.mysqlTable.users.update().where(self.mysqlTable.users.c.user_id == user_id)
+                      .values(params))
+    else:
+      raise egg_errors.QueryNotPossible
