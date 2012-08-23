@@ -9,14 +9,11 @@ class EventBase(tornado.web.RequestHandler):
     self.db = db
     self.event = Event(self.db)
 
-  @property
-  def params(self):
-    "returns params dictionary"
-    params = {}
+    self.params = {}
     for param in self.request.arguments:
-      params[param] = self.request.arguments[param][0]
+      self.params[param] = self.request.arguments[param][0]
 
-    return params
+    return self.params
 
 class EventsHandler(EventBase):
   "API endpoint: /event/"
@@ -38,7 +35,7 @@ class EventsHandler(EventBase):
 
 
     #CURL test
-    #curl -X POST-F "name=testiram" -F "description=ovo je description" -F "scheduled_for=2012-09-23T00:00:00" -F "expected_duration=17:00:00" -F "registration_deadline=2012-09-18T00:00:00" -F "location=Zagreb"  -F "hide_location=1" -F "registration_price=300" -F "creation_price=200" -F "is_active=1" -F "phase=before_event" localhost:8888/event/
+    #curl -X POST -F "name=testiram" -F "description=ovo je description" -F "scheduled_for=2012-09-23T00:00:00" -F "expected_duration=17:00:00" -F "registration_deadline=2012-09-18T00:00:00" -F "location=Zagreb"  -F "hide_location=1" -F "registration_price=300" -F "creation_price=200" -F "is_active=1" -F "phase=before_event" localhost:8888/event/
 
 class EventHandler(EventBase):
   """Handles single event interaction
