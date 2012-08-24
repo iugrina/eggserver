@@ -9,7 +9,8 @@ class MySQLTables:
       "event_badges_events",
       "event_participants",
       "event_participant_badges",
-      "event_photos"
+      "event_photos",
+      "users",
       ]
 
     for _table in tables:
