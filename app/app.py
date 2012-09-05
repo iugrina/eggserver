@@ -22,14 +22,15 @@ class Application(tornado.web.Application):
       (r"/event/([0-9]+)/user/([0-9]+)", controllers.events.EventUserHandler, dict(db=self.db)),
       (r"/profile/", controllers.profiles.ProfilesHandler, dict(db=self.db)),
       (r"/profile/([0-9]+)", controllers.profiles.ProfileHandler, dict(db=self.db)),
+      (r"/login/", controllers.auth.LoginHandler, dict(db=self.db)),
     ]
 
     settings = dict(
       debug=True,
+      cookie_secret="61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
     )
 
-    tornado.web.Application.__init__(self, handlers)
-
+    tornado.web.Application.__init__(self, handlers, **settings)
 
 if __name__ == "__main__":
   app = Application()
