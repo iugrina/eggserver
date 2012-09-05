@@ -1,0 +1,13 @@
+#!/bin/bash
+
+HOSTNAME=`hostname`
+
+if [ "$HOSTNAME" == "hatch.et-ego.com" ]; then
+  set -e
+  cd /var/eggserver/src
+  source ../bin/activate
+  source pythonpath.sh
+  exec ../bin/python app/app.py
+else 
+  echo "This script is intended for use on the Egg server. For development purposes, please run the application server manually (python app/app.py)."
+fi
