@@ -30,7 +30,7 @@ class LoginHandler(AuthBase):
         json = utils.jsonResult(result)
         self.write(json)
         if not self.get_secure_cookie("user"):
-          self.set_secure_cookie("user", '1')
+          self.set_secure_cookie("user", self.params["email"])
       else:
         self.write('error')
     #validation error
