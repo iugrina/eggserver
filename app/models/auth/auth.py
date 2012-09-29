@@ -13,7 +13,7 @@ class Auth:
   def login(self, params):
     "Try to authorize user"
     user = self.mysqlTable.users.c
-    result = self.mysqlTable.users.select((user.email == params['email']) & (user.password == params['password'])).execute()
+    result = self.mysqlTable.users.select((user.email == params['email']) & (user.password == sqlalchemy.func.password(params['password']))).execute()
     if result.rowcount == 1:
       return result
     else:
