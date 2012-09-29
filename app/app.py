@@ -22,7 +22,7 @@ class Application(tornado.web.Application):
       (r"/event/([0-9]+)/user/([0-9]+)", controllers.events.EventUserHandler, dict(db=self.db)),
       (r"/profile/", controllers.profiles.ProfilesHandler, dict(db=self.db)),
       (r"/profile/([0-9]+)", controllers.profiles.ProfileHandler, dict(db=self.db)),
-      (r"/login/", controllers.auth.LoginHandler, dict(db=self.db)),
+      (r"/profile/login/", controllers.profiles.LoginHandler, dict(db=self.db)),
     ]
 
     settings = dict(
