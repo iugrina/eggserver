@@ -38,3 +38,13 @@ class Profile:
                       .values(params))
     else:
       raise egg_errors.QueryNotPossible
+    
+  def login(self, params):
+    "Try to authorize user"
+    user = self.mysql_tables.users.c
+    result = self.mysql_tables.users.select((user.email == params['email']) & (user.password == sqlalchemy.func.password(params['password']))).execute()
+    if result.rowcount == 1:
+      return result
+    else:
+      return False
+    raise egg_errors.QueryNotPossible

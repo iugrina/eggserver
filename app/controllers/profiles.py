@@ -67,3 +67,28 @@ class ProfileHandler(ProfileBase):
     self.profile.update_user(user_id, self.params)
     
     
+class LoginHandler(ProfileBase):
+  """Handles single profile interaction
+  API endpoint: /profile/login/"""
+  
+  def get(self):
+    "Not currently defined (used for filtering)"
+    pass
+
+  def post(self):
+    "Request user profileorization"
+    try:
+      result = self.profile.login(self.params)
+      if result:
+        json = utils.jsonResult(result)
+        self.write(json)
+        if not self.get_secure_cookie("user"):
+          self.set_secure_cookie("user", self.params["email"])
+      else:
+        self.write('error')
+    #validation error
+    except val.InvalidList as e:
+      self.write(utils.json.dumps(str(e)))
+    #query error
+    except egg_errors.QueryNotPossible as e:
+      self.write(e.get_json())
