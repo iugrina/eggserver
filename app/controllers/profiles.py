@@ -76,7 +76,7 @@ class LoginHandler(ProfileBase):
     pass
 
   def post(self):
-    "Request user profileorization"
+    "Request user profile authorization"
     try:
       result = self.profile.login(self.params)
       if result:
@@ -86,6 +86,25 @@ class LoginHandler(ProfileBase):
           self.set_secure_cookie("user", self.params["email"])
       else:
         self.write('error')
+    #validation error
+    except val.InvalidList as e:
+      self.write(utils.json.dumps(str(e)))
+    #query error
+    except egg_errors.QueryNotPossible as e:
+      self.write(e.get_json())
+      
+class SignupHandler(ProfileBase):
+  """API endpoint: /profile/signup/"""
+  
+  def get(self):
+    "Not currently defined (used for filtering)"
+    pass
+
+  def post(self):
+    "Create user and set cookie"
+    try:
+      self.profile.signup(self.params)
+      self.set_secure_cookie("user", self.params["email"])
     #validation error
     except val.InvalidList as e:
       self.write(utils.json.dumps(str(e)))

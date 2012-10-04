@@ -48,3 +48,8 @@ class Profile:
     else:
       return False
     raise egg_errors.QueryNotPossible
+  
+  def signup(self, params):
+    "Sign up the user"
+    profile_schema.validate_profiles(params)
+    self.db.execute(self.mysql_tables.users.insert().values(params))

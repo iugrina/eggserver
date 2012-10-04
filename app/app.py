@@ -23,6 +23,7 @@ class Application(tornado.web.Application):
       (r"/profile/", controllers.profiles.ProfilesHandler, dict(db=self.db)),
       (r"/profile/([0-9]+)", controllers.profiles.ProfileHandler, dict(db=self.db)),
       (r"/profile/login/", controllers.profiles.LoginHandler, dict(db=self.db)),
+      (r"/profile/signup/", controllers.profiles.SignupHandler, dict(db=self.db)),
     ]
 
     settings = dict(
