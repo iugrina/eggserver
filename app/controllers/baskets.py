@@ -2,12 +2,13 @@
 
 import tornado.ioloop
 import tornado.web
+import tornado.escape
 
 import mongokit
 import json
 
 import models.baskets.dbproxy as dbproxy
-import common.eggErrors as eggErrors
+import common.egg_errors as eggErrors
 from models.baskets.mongodb_model import Basket
 
     
@@ -24,6 +25,19 @@ class GetChangeOrderBasketsHandler(BasketHandler):
             self.write( json.dumps( baskets ) )
         except eggErrors.BaseException as e :
             self.write( e.get_json() )
+
+    def post(self, user_id):
+        user_id = int(user_id)
+        try:
+            new_order = tornado.escape.json_decode( self.request.body )
+            try:
+                baskets = self.dbp.change_order_of_baskets(user_id, new_order)
+            except eggErrors.BaseException as e :
+                self.write( e.get_json() )
+        except ValueError:
+            e = eggErrors.InvalidJSONException()
+            self.write( e.get_json() )
+
 
 class AddBasketHandler(BasketHandler):
     def post(self, user_id): 
@@ -50,6 +64,27 @@ class GetDelChangeOrderBasketHandler(BasketHandler):
         except eggErrors.BaseException as e :
             self.write( e.get_json() )
 
+    def delete(self, user_id, basket_id):
+        user_id = int(user_id)
+        basket_id = int(basket_id)
+        try:
+            basket = self.dbp.delete_basket(user_id, basket_id)
+        except eggErrors.BaseException as e :
+            self.write( e.get_json() )
+
+    def post(self, user_id, basket_id):
+        user_id = int(user_id)
+        basket_id = int(basket_id)
+        try:
+            new_order = tornado.escape.json_decode( self.request.body )
+            try:
+                baskets = self.dbp.change_order_of_users_in_basket(user_id, basket_id, new_order)
+            except eggErrors.BaseException as e :
+                self.write( e.get_json() )
+        except ValueError:
+            e = eggErrors.InvalidJSONException()
+            self.write( e.get_json() )
+
 
 class AddDelUserFromBasketHandler(BasketHandler):
     def post(self, user_id, basket_id, add_user_id):
@@ -61,6 +96,14 @@ class AddDelUserFromBasketHandler(BasketHandler):
         except eggErrors.BaseException as e :
             self.write( e.get_json() )
 
+    def delete(self, user_id, basket_id, add_user_id):
+        user_id = int(user_id)
+        basket_id = int(basket_id)
+        del_user_id = int(add_user_id)
+        try:
+            basket = self.dbp.delete_user_from_basket(user_id, basket_id, del_user_id)
+        except eggErrors.BaseException as e :
+            self.write( e.get_json() )
 
                 
 if __name__ == "__main__":

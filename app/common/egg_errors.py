@@ -15,6 +15,18 @@ class BaseException(Exception):
 # global exceptions 100-999
 #
 
+class InvalidJSONException(BaseException):
+    def __init__(self):
+        BaseException.__init__(self)
+        self.error_code =50 
+        self.error_message = u"Invalid JSON!"
+
+class TypeErrorJSONException(BaseException):
+    def __init__(self):
+        BaseException.__init__(self)
+        self.error_code =51
+        self.error_message = u"Wrong type for sent JSON!"
+
 class UnknownUserIDException(BaseException):
     def __init__(self):
         BaseException.__init__(self)

@@ -1,9 +1,9 @@
-from common import eggErrors
+from common import egg_errors as eggErrors
 from mongodb_model import Basket
 import mongoconnector
 
 class DbProxy:
-    """DbProxy class is user as bridge between different DBs
+    """DbProxy class is used as the bridge between different DBs
     and the needs of client app. It defines several methods
     (interface) regarding Baskets"""
 

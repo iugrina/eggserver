@@ -1,4 +1,4 @@
-from common import eggErrors
+from common import egg_errors as eggErrors
 from mongodb_model import Basket
 
 class MongoConnector:
@@ -22,7 +22,7 @@ class MongoConnector:
         return bp['baskets']
 
     def get_basket(self, user_id, basket_id):
-        "Returns basket with basket_id for with user_id"
+        "Returns basket with basket_id for user_id"
 
         try:
             bp = self.db.Basket.find_one({'user_id' : user_id})
