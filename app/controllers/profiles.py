@@ -4,6 +4,7 @@ from common import utils, egg_errors
 from lib.voluptuous import voluptuous as val
 import confegg
 import sqlalchemy
+import bcrypt
 import controllers
 
 class ProfileBase(tornado.web.RequestHandler):
