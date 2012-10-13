@@ -4,3 +4,4 @@ db_schema/.yoyo-migrate
 tools/badges_frontend/thumb
 confegg/app.json
 app/settings.py
+.*.swp
