@@ -88,13 +88,15 @@ class LoginHandler(ProfileBase):
         if not self.get_secure_cookie("user"):
           self.set_secure_cookie("user", self.params["email"])
       else:
-        self.write('error')
+        self.write(utils.json.dumps({ 'error': 'unknown user' }))
     #validation error
     except val.InvalidList as e:
       self.write(utils.json.dumps(str(e)))
     #query error
     except egg_errors.QueryNotPossible as e:
       self.write(e.get_json())
+    except KeyError as e:
+      self.write(utils.json.dumps({ 'error': 'no data' }))
       
 class SignupHandler(ProfileBase):
   """API endpoint: /profile/signup/"""
@@ -114,7 +116,6 @@ class SignupHandler(ProfileBase):
     #query error
     except egg_errors.QueryNotPossible as e:
       self.write(e.get_json())
-
 
 if __name__ == "__main__":
     conf = confegg.get_config()
@@ -138,4 +139,3 @@ if __name__ == "__main__":
 
     app.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
-
