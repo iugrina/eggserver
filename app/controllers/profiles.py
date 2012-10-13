@@ -2,6 +2,9 @@ import tornado.web
 from models.profiles.profile import Profile
 from common import utils, egg_errors
 from lib.voluptuous import voluptuous as val
+import confegg
+import sqlalchemy
+import controllers
 
 class ProfileBase(tornado.web.RequestHandler):
   def initialize(self, db):
@@ -111,3 +114,28 @@ class SignupHandler(ProfileBase):
     #query error
     except egg_errors.QueryNotPossible as e:
       self.write(e.get_json())
+
+
+if __name__ == "__main__":
+    conf = confegg.get_config()
+    db = sqlalchemy.create_engine("mysql://" + conf['mysql']['username'] + ":" +
+                                       conf['mysql']['password'] + "@" + conf['mysql']['host'] + "/" +
+                                       conf['mysql']['database'])
+    db.metadata  = sqlalchemy.MetaData(bind=db)
+    #db.echo = "debug"
+
+    app = tornado.web.Application([
+      (r"/profile/", controllers.profiles.ProfilesHandler, dict(db=db)),
+      (r"/profile/([0-9]+)", controllers.profiles.ProfileHandler, dict(db=db)),
+      (r"/profile/login/", controllers.profiles.LoginHandler, dict(db=db)),
+      (r"/profile/signup/", controllers.profiles.SignupHandler, dict(db=db)),
+    ])
+
+    settings = dict(
+      debug=True,
+      cookie_secret="61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
+    )
+
+    app.listen(8888)
+    tornado.ioloop.IOLoop.instance().start()
+
