@@ -12,10 +12,10 @@ $(function() {
   
   $(".table tr").hover(
     function () {
-      $(this).find(".btn-danger, .btn-inverse").toggle();
+      $(this).find(".btn-danger, .btn-info, .btn-inverse").toggle();
     },
     function () {
-      $(this).find(".btn-danger, .btn-inverse").toggle();
+      $(this).find(".btn-danger, .btn-info, .btn-inverse").toggle();
     }
   );
   
