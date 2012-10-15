@@ -11,6 +11,9 @@ class MySQLTables:
       "event_participant_badges",
       "event_photos",
       "users",
+      "badges_users",
+      "friends",
+      "badges",
       ]
 
     for _table in tables:
