@@ -6,4 +6,5 @@ if [ $ROOT == "." ]; then
 	ROOT=`pwd`
 fi
 APP=${ROOT}"/app"
-export PYTHONPATH="${ROOT}:${APP}:${PYTHONPATH}"
+LIB=${ROOT}"/lib"
+export PYTHONPATH="${ROOT}:${APP}:${LIB}:${PYTHONPATH}"
