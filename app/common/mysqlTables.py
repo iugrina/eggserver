@@ -14,6 +14,8 @@ class MySQLTables:
       "badges_users",
       "friends",
       "badges",
+      "blacklist",
+      "profile_images"
       ]
 
     for _table in tables:
