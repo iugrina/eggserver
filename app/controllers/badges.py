@@ -81,7 +81,7 @@ if __name__ == "__main__":
     db.metadata  = sqlalchemy.MetaData(bind=db)
     #self.db.echo = "debug"
 
-    f = open(conf['log']['static_path']+"/badges.log", "wa")
+    f = open(conf['log']['static_path']+conf['log']['badges'], "wa")
 
     badgesusers = BadgesUsers(db, f)
     badges = Badges(db, f)

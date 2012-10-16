@@ -23,6 +23,7 @@ class Friends:
     def log(self, e):
         if self.lf :
             self.lf.write(str(datetime.datetime.utcnow()) + " :: " + str(e) + "\n")
+            self.lf.flush()
 
 
     def get_friends(self, user_id):
