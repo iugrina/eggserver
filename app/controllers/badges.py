@@ -14,24 +14,28 @@ import common.egg_errors as eggErrors
 from models.badges.badges import BadgesUsers, Badges
 
 class BadgesHandler(tornado.web.RequestHandler):
-    def initialize(self, badges ):
+    def initialize(self, badges, badgeslist, badgestree ):
         self.b = badges
+        self.blist = badgeslist
+        self.btree = badgestree
 
 class GetBadgesHandler(BadgesHandler):
     def get(self):
-        try:
-            r = self.b.get_badges()
-            self.write( json.dumps( r, ensure_ascii=False) )
-        except eggErrors.BaseException as e :
-            self.write( e.get_json() )
+        self.write( json.dumps( self.blist, ensure_ascii=False ) )
+#        try:
+#            r = self.b.get_badges()
+#            self.write( json.dumps( r, ensure_ascii=False) )
+#        except eggErrors.BaseException as e :
+#            self.write( e.get_json() )
 
 class GetBadgesTreeHandler(BadgesHandler):
     def get(self):
-        try:
-            r = self.b.get_badges_as_tree()
-            self.write( json.dumps( r, ensure_ascii=False ) )
-        except eggErrors.BaseException as e :
-            self.write( e.get_json() )
+        self.write( json.dumps( self.btree, ensure_ascii=False ) )
+#        try:
+#            r = self.b.get_badges_as_tree()
+#            self.write( json.dumps( r, ensure_ascii=False ) )
+#        except eggErrors.BaseException as e :
+#            self.write( e.get_json() )
 
     
 class BadgesUsersHandler(tornado.web.RequestHandler):
@@ -86,9 +90,14 @@ if __name__ == "__main__":
     badgesusers = BadgesUsers(db, f)
     badges = Badges(db, f)
 
+    # korist cemo vec gotovu listu i dict jer ce se bedzevi
+    # uredjivati sa zasebnim alatom u "maintenance mode"-u
+    badgeslist = badges.get_badges()
+    badgestree = badges.get_badges()
+
     application = tornado.web.Application([
-        (r"/badges", GetBadgesHandler, dict(badges=badges)),
-        (r"/badges/tree", GetBadgesTreeHandler, dict(badges=badges)),
+        (r"/badges", GetBadgesHandler, dict(badges=badges, badgeslist=badgeslist, badgestree=badgestree)),
+        (r"/badges/tree", GetBadgesTreeHandler, dict(badges=badges, badgeslist=badgeslist, badgestree=badgestree)),
         (r"/profile/([0-9]+)/badges", GetBadgesForUserHandler, dict(badgesusers=badgesusers)),
         (r"/profile/([0-9]+)/badges/([0-9]+)", AddChangeDeleteBadgesForUserHandler, dict(badgesusers=badgesusers)),
     ])
