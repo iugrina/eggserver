@@ -4,15 +4,6 @@ from common.mysqlTables import MySQLTables
 from common import egg_errors
 
 
-#
-# trebala bi postojati negdje provjera
-# za paramtre user_id, friend_id !!!
-# mozda bi bilo najpametnije to staviti
-# u common i raditi kod primanja paramatera
-# u samom app-u
-#
-
-
 class Friends:
     def __init__(self, db, logging_file=None):
         self.db = db
@@ -32,8 +23,6 @@ class Friends:
 	        result = self.table.select(
 	            self.table.c.user_id == user_id ).execute()
 	        if result.rowcount >= 1:
-	            # ovdje bi sad trebalo dohvatiti za sve friendove
-	            # njihove profile i onda ih vratiti natrag kao listu
 	            return [x.values() for x in result]
 	        elif result.rowcount == 0:
 	            return []
