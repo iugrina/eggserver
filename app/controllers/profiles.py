@@ -4,7 +4,6 @@ from common import utils, egg_errors
 from lib.voluptuous import voluptuous as val
 import confegg
 import sqlalchemy
-import bcrypt
 import controllers
 
 class ProfileBase(tornado.web.RequestHandler):
@@ -84,10 +83,9 @@ class LoginHandler(ProfileBase):
     try:
       result = self.profile.login(self.params)
       if result:
-        json = utils.jsonResult(result)
-        self.write(json)
+        self.write(utils.jsonRow(result))
         if not self.get_secure_cookie("user"):
-          self.set_secure_cookie("user", self.params["email"])
+          self.set_secure_cookie("user", self.params["username"])
       else:
         self.write('error')
     #validation error

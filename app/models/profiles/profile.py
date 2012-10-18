@@ -1,8 +1,10 @@
 import sqlalchemy
 from common.mysqlTables import MySQLTables
 from common import egg_errors
+from common import utils
 import schema as profile_schema
-
+import bcrypt
+import copy
 
 class Profile:
   def __init__(self, db):
@@ -42,9 +44,11 @@ class Profile:
   def login(self, params):
     "Try to authorize user"
     user = self.mysql_tables.users.c
-    result = self.mysql_tables.users.select((user.email == params['email']) & (user.password == sqlalchemy.func.password(params['password']))).execute()
-    if result.rowcount == 1:
-      return result
+    result = self.mysql_tables.users.select((user.username == params['username'])).execute()
+    row = result.fetchone()
+    
+    if bcrypt.hashpw(params['password'], row.password) == row.password:
+      return row
     else:
       return False
     raise egg_errors.QueryNotPossible
