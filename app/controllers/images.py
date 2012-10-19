@@ -66,10 +66,10 @@ if __name__ == "__main__":
     images_path = conf['env']['static_url_path'] + conf['images']['images_root']
 
     application = tornado.web.Application([
-        (r"/profile/([0-9]+)/images", GetAllProfileImagesHandler, dict(profileimages=profileimages, images_path=images_path)),
-        (r"/profile/([0-9]+)/images/friend", GetProfileImagesByTypeHandler, dict(profileimages=profileimages, images_path=images_path, t='friend')),
-        (r"/profile/([0-9]+)/images/profile", GetProfileImagesByTypeHandler, dict(profileimages=profileimages, images_path=images_path, t='profile')),
-        (r"/profile/([0-9]+)/images/other", GetProfileImagesByTypeHandler, dict(profileimages=profileimages, images_path=images_path, t='other')),
+        (r"/profile/([0-9]+)/photos", GetAllProfileImagesHandler, dict(profileimages=profileimages, images_path=images_path)),
+        (r"/profile/([0-9]+)/photos/friend", GetProfileImagesByTypeHandler, dict(profileimages=profileimages, images_path=images_path, t='friend')),
+        (r"/profile/([0-9]+)/photos/profile", GetProfileImagesByTypeHandler, dict(profileimages=profileimages, images_path=images_path, t='profile')),
+        (r"/profile/([0-9]+)/photos/other", GetProfileImagesByTypeHandler, dict(profileimages=profileimages, images_path=images_path, t='other')),
         (r"/static/images/(.*)", tornado.web.StaticFileHandler, {"path": conf['env']['static_path']+conf['images']['images_root']}),
     ])
 
