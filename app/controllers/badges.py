@@ -93,14 +93,14 @@ if __name__ == "__main__":
     # korist cemo vec gotovu listu i dict jer ce se bedzevi
     # uredjivati sa zasebnim alatom u "maintenance mode"-u
     badgeslist = badges.get_badges()
-    badgestree = badges.get_badges()
+    badgestree = badges.get_badges_as_tree()
 
     application = tornado.web.Application([
         (r"/badges", GetBadgesHandler, dict(badges=badges, badgeslist=badgeslist, badgestree=badgestree)),
         (r"/badges/tree", GetBadgesTreeHandler, dict(badges=badges, badgeslist=badgeslist, badgestree=badgestree)),
         (r"/profile/([0-9]+)/badges", GetBadgesForUserHandler, dict(badgesusers=badgesusers)),
         (r"/profile/([0-9]+)/badges/([0-9]+)", AddChangeDeleteBadgesForUserHandler, dict(badgesusers=badgesusers)),
-    ])
+    ], debug=True)
 
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
