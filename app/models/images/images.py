@@ -1,21 +1,18 @@
 import sqlalchemy
+from sqlalchemy import and_
 from common.mysqlTables import MySQLTables
 from common import egg_errors
+from common.utils import ExceptionLogger
 import datetime
 
-class ProfileImages:
+class ProfileImages( ExceptionLogger ):
     def __init__(self, db, logging_file=None):
         self.db = db
         self.mysql_tables = MySQLTables(db)
         self.table = self.mysql_tables.profile_images
-        self.lf = logging_file
 
-    def log(self, e):
-        if self.lf :
-            self.lf.write(str(datetime.datetime.utcnow()) + " :: " + str(e) + "\n")
-            self.lf.flush()
-        else:
-            print str(datetime.datetime.utcnow()) + " :: " + str(e)
+        # superclass 
+        self.lf = logging_file
 
     def get_user_images(self, user_id):
         "Returns all images for given user"
@@ -23,9 +20,9 @@ class ProfileImages:
             result = self.table.select(
                 self.table.c.user_id == user_id ).execute()
             if result.rowcount >= 1:
-                r = [x.values() for x in result]
+                r = [dict(x.items()) for x in result]
                 for x in r :
-                    x[3] = str(x[3])
+                    x['created'] = str(x['created'])
                 return r
             elif result.rowcount == 0:
                 return []
@@ -41,9 +38,9 @@ class ProfileImages:
                 self.table.c.user_id == user_id,
                 self.table.c.type == t)).execute()
             if result.rowcount >= 1:
-                r = [x.values() for x in result]
+                r = [dict(x.items()) for x in result]
                 for x in r :
-                    x[3] = str(x[3])
+                    x['created'] = str(x['created'])
                 return r
             elif result.rowcount == 0:
                 return []
@@ -51,4 +48,17 @@ class ProfileImages:
             self.log(e)
             raise egg_errors.QueryNotPossible
 
+    def get_image_path(self, pi, forced_type=None):
+        """Creates path to the image without root part
+           e.g. /profile/123456701.jpg
+                /friend/123456701.jpg
+                /other/123456789.jpg
+
+           pi should be an image obtained by get_user_images*
+           if forced_type is ! None then it will be used in path
+        """
+        if not forced_type :
+            return "/" + str(pi['type']) + "/" + str(pi['image_id']) + str(pi['extension'])
+        else :
+            return "/" + str(forced_type) + "/" + str(pi['image_id']) + str(pi['extension'])
 

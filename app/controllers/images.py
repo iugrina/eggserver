@@ -16,6 +16,7 @@ from models.images.images import ProfileImages
 class ProfileImagesHandler(tornado.web.RequestHandler):
     def initialize(self, profileimages, images_path, t=None  ):
         self.pi = profileimages
+        # t = type
         self.t = t
         self.images_path = images_path
 
@@ -24,10 +25,9 @@ class GetAllProfileImagesHandler(ProfileImagesHandler):
         user_id = int(user_id)
         try:
             r = self.pi.get_user_images(user_id)
-            r2 = list()
             for x in r:
-                r2.append( [self.images_path  + str(x[5]) + "/" + str(x[0]) + str(x[7]), x[2], x[3], x[4]] )
-            self.write( json.dumps( r2, ensure_ascii=False) )
+                x['url'] = self.images_path + self.pi.get_image_path(x)
+            self.write( json.dumps( r, ensure_ascii=False) )
         except eggErrors.BaseException as e :
             self.write( e.get_json() )
 
@@ -38,15 +38,16 @@ class GetProfileImagesByTypeHandler(ProfileImagesHandler):
             # profile i friend slike su iste samo razlicite velicine
             # te se nalaze u razlicitim direktorijima
             # pa zato ovaj mali mumbo jumbo
-            if( self.t == 'friend' ) : t = 'profile'
-            else : t = self.t
-            r = self.pi.get_user_images_by_type(user_id, t)
-            r2 = list()
+            if self.t == 'friend' :
+                r = self.pi.get_user_images_by_type(user_id, 'profile')
+            else: 
+                r = self.pi.get_user_images_by_type(user_id, self.t)
             for x in r:
-                if( self.t == 'friend' ) : tmp = 'friend'
-                else : tmp = x[5]
-                r2.append( [self.images_path + str(tmp) +"/" + str(x[0]) + str(x[7]), x[2], x[3], x[4]] )
-            self.write( json.dumps( r2, ensure_ascii=False) )
+                if( self.t == 'friend' ) : 
+                    x['url'] = self.images_path + self.pi.get_image_path(x, 'friend')
+                else :
+                    x['url'] = self.images_path + self.pi.get_image_path(x)
+            self.write( json.dumps( r, ensure_ascii=False) )
         except eggErrors.BaseException as e :
             self.write( e.get_json() )
 
@@ -71,7 +72,7 @@ if __name__ == "__main__":
         (r"/profile/([0-9]+)/photos/profile", GetProfileImagesByTypeHandler, dict(profileimages=profileimages, images_path=images_path, t='profile')),
         (r"/profile/([0-9]+)/photos/other", GetProfileImagesByTypeHandler, dict(profileimages=profileimages, images_path=images_path, t='other')),
         (r"/static/images/(.*)", tornado.web.StaticFileHandler, {"path": conf['env']['static_path']+conf['images']['images_root']}),
-    ])
+    ], debug=True)
 
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
