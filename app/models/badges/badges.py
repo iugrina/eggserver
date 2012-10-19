@@ -2,21 +2,16 @@ import sqlalchemy
 from sqlalchemy import and_
 from common.mysqlTables import MySQLTables
 from common import egg_errors
-import datetime
+from common.utils import ExceptionLogger
 #import schema as badges_users_schema
 
 
-class BadgesUsers:
+class BadgesUsers( ExceptionLogger ):
     def __init__(self, db, logging_file=None):
         self.db = db
         self.mysql_tables = MySQLTables(db)
         self.table = self.mysql_tables.badges_users
         self.lf = logging_file
-
-    def log(self, e):
-        if self.lf :
-            self.lf.write(str(datetime.datetime.utcnow()) + " :: " + str(e) + "\n")
-            self.lf.flush()
 
     def get_user_badges(self, user_id):
         "Returns badges for given user with user_id"
@@ -24,7 +19,7 @@ class BadgesUsers:
             result = self.table.select(
                 self.table.c.user_id == user_id ).execute()
             if result.rowcount >= 1:
-                return [x.values() for x in result]
+                return [dict(x.items()) for x in result]
             elif result.rowcount == 0:
                 return []
         except Exception as e:
@@ -39,7 +34,7 @@ class BadgesUsers:
                 self.table.c.user_id == user_id,
                 self.table.c.visibility == visibility )).execute()
             if result.rowcount >= 1:
-                return [x.values() for x in result]
+                return [dict(x.items()) for x in result]
             elif result.rowcount == 0:
                 return []
         except Exception as e:
@@ -85,17 +80,12 @@ class BadgesUsers:
             raise egg_errors.QueryNotPossible
 
 
-class Badges:
+class Badges( ExceptionLogger ):
     def __init__(self, db, logging_file=None):
         self.db = db
         self.mysql_tables = MySQLTables(db)
         self.table = self.mysql_tables.badges
         self.lf = logging_file
-
-    def log(self, e):
-        if self.lf :
-            self.lf.write(str(datetime.datetime.utcnow()) + " :: " + str(e) + "\n")
-            self.lf.flush()
 
     def get_badges(self):
         try:
