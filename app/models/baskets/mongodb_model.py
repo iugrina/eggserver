@@ -1,7 +1,8 @@
 from mongokit import Document
+import confegg
 
 class Basket(Document):
-    __database__ = "eggdb"
+    __database__ = confegg.get_config()['mongo']['database']
     __collection__ = "baskets"
     
     structure = {
