@@ -7,6 +7,8 @@ import tornado.escape
 import mongokit
 import json
 
+import confegg
+
 import models.recommended.recommended
 import common.egg_errors as eggErrors
 from models.recommended.mongodb_model import Recommended
@@ -28,16 +30,29 @@ class GetRecommendedHandler(BasketHandler):
 
                 
 if __name__ == "__main__":
-    con = mongokit.Connection('localhost', 27017)
-    con.register([Recommended])
-    mongodb = con
+    conf = confegg.get_config()
 
-    dbp = models.recommended.recommended.Recommended( mongodb)
+    handlers = []
 
-    application = tornado.web.Application([
-        (r"/profile/([0-9]+)/recommended", GetRecommendedHandler, dict(dbp=dbp)),
-    ])
 
+
+    conRec = mongokit.Connection(conf['mongo']['host'], conf['mongo']['port'])
+    conRec.register([Recommended])
+
+    recommended_dbp = models.recommended.recommended.Recommended( conRec)
+
+    handlers.extend( [
+        (r"/profile/([0-9]+)/recommended", GetRecommendedHandler, dict(dbp=recommended_dbp)),
+        ])
+
+
+
+    settings = dict(
+      debug=True,
+      cookie_secret="61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
+    )
+
+    application = tornado.web.Application( handlers, **settings)
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
 
