@@ -1,4 +1,5 @@
 {
+  "client_url": "http://localhost",
   "mysql": {
     "host": "localhost",
     "port": 3306,
