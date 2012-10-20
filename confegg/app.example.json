@@ -24,14 +24,14 @@
     "images_root": "/images",
     "badges": "/badges",
     "profile": "/profile",
-	"friend": "/friend"
+  "friend": "/friend"
   },
   "log": {
     "static_path": "apsolute path to your static directory for logs",
-	"baskets": "baskets.log",
-	"friends": "friends.log",
-	"badges": "badges.log",
-	"blacklist": "blacklist.log",
-	"images": "images.log"
+    "baskets": "baskets.log",
+    "friends": "friends.log",
+    "badges": "badges.log",
+    "blacklist": "blacklist.log",
+    "images": "images.log"
   }
 }
