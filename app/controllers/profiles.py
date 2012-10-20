@@ -47,11 +47,16 @@ class ProfilesHandler(ProfileBase):
 class ProfileHandler(ProfileBase):
   """Handles single profile interaction
   API endpoint: /profile/:id"""
+
+  def initialize(self, db, profiledata):
+    super(ProfileHandler, self).initialize(db)
+    self.profiledata = profiledata
+
+
   def get(self, user_id):
     "Retrieves profile with user_id"
     try:
-      profiledata = ProfileData( self.db )
-      result = profiledata.get_user_info(int(user_id))
+      result = self.profiledata.get_user_info(int(user_id))
       self.write( json.dumps( result, ensure_ascii=True ) )
     except egg_errors.BaseException as e :
       self.write( e.get_json() )
@@ -133,9 +138,12 @@ if __name__ == "__main__":
       cookie_secret="61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
     )
 
+    f = open(conf['log']['static_path']+conf['log']['profiles'], "wa")
+    profiledata = ProfileData( db, f )
+
     app = tornado.web.Application([
       (r"/profile/", controllers.profiles.ProfilesHandler, dict(db=db)),
-      (r"/profile/([0-9]+)", controllers.profiles.ProfileHandler, dict(db=db)),
+      (r"/profile/([0-9]+)", controllers.profiles.ProfileHandler, dict(db=db, profiledata=profiledata)),
       (r"/profile/login/", controllers.profiles.LoginHandler, dict(db=db)),
       (r"/profile/signup/", controllers.profiles.SignupHandler, dict(db=db)),
     ], **settings)
