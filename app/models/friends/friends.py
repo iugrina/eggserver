@@ -2,20 +2,15 @@ import sqlalchemy
 from sqlalchemy import and_
 from common.mysqlTables import MySQLTables
 from common import egg_errors
+from common.utils import ExceptionLogger
 
 
-class Friends:
+class Friends( ExceptionLogger ):
     def __init__(self, db, logging_file=None):
         self.db = db
         self.mysql_tables = MySQLTables(db)
         self.table = self.mysql_tables.friends
         self.lf = logging_file
-
-    def log(self, e):
-        if self.lf :
-            self.lf.write(str(datetime.datetime.utcnow()) + " :: " + str(e) + "\n")
-            self.lf.flush()
-
 
     def get_friends(self, user_id):
         "Returns friends for user with user_id"
