@@ -67,12 +67,12 @@ class Profile:
 
 
 class ProfileData():
-    def __init__(self, db):
+    def __init__(self, db, f=None):
         self.db = db
         self.p = Profile(self.db)
-        self.i = ProfileImages(self.db)
-        self.f = Friends(self.db)
-        self.bu = BadgesUsers(self.db)
+        self.i = ProfileImages(self.db, f)
+        self.f = Friends(self.db, f)
+        self.bu = BadgesUsers(self.db, f)
 
         conf = confegg.get_config()
         self.images_path = conf['env']['static_url_path'] + conf['images']['images_root']
