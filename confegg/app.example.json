@@ -17,6 +17,21 @@
   },
   "env": {
     "static_path": "apsolute path to your static directory",
+    "static_url_path": "url path to static folder; e.g. /static",
     "static_vhost" : "name of your virtual host pointing to the static_path defined above"
+  },
+  "images": {
+    "images_root": "/images",
+    "badges": "/badges",
+    "profile": "/profile",
+	"friend": "/friend"
+  },
+  "log": {
+    "static_path": "apsolute path to your static directory for logs",
+	"baskets": "baskets.log",
+	"friends": "friends.log",
+	"badges": "badges.log",
+	"blacklist": "blacklist.log",
+	"images": "images.log"
   }
 }

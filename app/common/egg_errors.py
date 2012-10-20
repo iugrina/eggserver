@@ -31,7 +31,7 @@ class UnknownUserIDException(BaseException):
     def __init__(self):
         BaseException.__init__(self)
         self.error_code = 100
-        self.error_message = u"Unknown User ID"
+        self.error_message = u"Unknown User (or Friend) ID"
 
 class UnknownBasketIDException(BaseException):
     def __init__(self):
@@ -39,12 +39,19 @@ class UnknownBasketIDException(BaseException):
         self.error_code = 101
         self.error_message = u"User does not have a basket with that basket_id"
 
+class UnknownBadgeIDException(BaseException):
+    def __init__(self):
+        BaseException.__init__(self)
+        self.error_code = 102
+        self.error_message = u"Uknown Badge ID"
+
+
 
 class QueryNotPossible(BaseException):
-  def __init__(self):
-    BaseException.__init__(self)
-    self.error_code = 1000
-    self.error_message = u"Query failed"
+    def __init__(self):
+        BaseException.__init__(self)
+        self.error_code = 1000
+        self.error_message = u"Query failed"
 
 #
 # Basket mangling exceptions 10000-10199
@@ -106,7 +113,15 @@ class MismatchUserIDException(BaseException):
         self.error_message = u"User ids used for sorting are incorrect"
 
 
+#
+# BadgesUsers mangling exceptions 10200-10399
+#
 
+class UnknownUserOrBadgeIDException(BaseException):
+    def __init__(self):
+        BaseException.__init__(self)
+        self.error_code = 10200
+        self.error_message = u"Uknown User ID or Badge ID"
 
 
 

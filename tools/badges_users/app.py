@@ -55,6 +55,44 @@ class AddNewBadgeHandler(ProtoHandler):
     except Exception:
       badges = self.db.query("select * from badges")
       self.render("badges.html", badges=badges, static_vhost=static_vhost, added_new=False, error=True)
+
+class EditBadgeHandler(ProtoHandler):
+  def get(self, bid):
+    static_vhost = conf['env']['static_vhost']
+    badge = self.db.query("select * from badges where badge_id=%s", bid)
+    badges = self.db.query("select * from badges")
+    self.render("edit_badge.html", badge=badge[0], badges=badges, added_new=False, error=False)
+    
+  def post(self, bid):
+    static_vhost = conf['env']['static_vhost']
+    try:
+      name = self.get_argument("name")
+      description = self.get_argument("description")
+      parent = self.get_argument("parent")
+      type = self.get_argument("type")
+      
+      if self.request.files:
+        filename = self.request.files['image'][0]['filename']
+        static_path = conf['env']['static_path']
+        path = static_path + '/images/bubbles/' + filename
+        directory = os.path.dirname(path)
+        if not os.path.exists(directory):
+          os.makedirs(directory)
+        file = open(path, "w")
+        file.write(self.request.files['image'][0]['body'])
+        file.close()
+        
+        self.db.execute(
+            "UPDATE badges SET name=%s, image_link=%s, description=%s, parent=%s, type=%s WHERE badge_id=%s",
+            name, filename, description, parent, type, bid)
+        
+        badges = self.db.query("select * from badges")
+        self.render("badges.html", badges=badges, static_vhost=static_vhost, added_new=True, error=False)
+      else:
+        raise Exception
+    except Exception:
+      badges = self.db.query("select * from badges")
+      self.render("badges.html", badges=badges, static_vhost=static_vhost, added_new=False, error=True)
       
 class GetBadgeHandler(ProtoHandler):
   def get(self, bid):
@@ -178,6 +216,7 @@ application = tornado.web.Application([
   (r"/badges/add", AddNewBadgeHandler, dict(db=db)),
   (r"/badges/get/([^/]+)", GetBadgeHandler, dict(db=db)),
   (r"/badges/delete/([^/]+)", DeleteBadgeHandler, dict(db=db)),
+  (r"/badges/edit/([^/]+)", EditBadgeHandler, dict(db=db)),
   (r"/users", ListUsersHandler, dict(db=db)),
   (r"/users/add", AddNewUserHandler, dict(db=db)),
   (r"/users/delete/([^/]+)", DeleteUserHandler, dict(db=db)),

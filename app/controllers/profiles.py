@@ -1,10 +1,12 @@
 import tornado.web
-from models.profiles.profile import Profile
+import json
 from common import utils, egg_errors
 from lib.voluptuous import voluptuous as val
 import confegg
 import sqlalchemy
 import controllers
+import controllers.profiles
+from models.profiles.profile import Profile, ProfileData
 
 class ProfileBase(tornado.web.RequestHandler):
   def initialize(self, db):
@@ -14,7 +16,8 @@ class ProfileBase(tornado.web.RequestHandler):
     self.params = {}
     for param in self.request.arguments:
       self.params[param] = self.request.arguments[param][0]
-      
+
+    # cem' ovo ???
     return self.params
   
   
@@ -44,15 +47,11 @@ class ProfileHandler(ProfileBase):
   def get(self, user_id):
     "Retrieves profile with user_id"
     try:
-      result = self.profile.get_user(int(user_id))
-      json = utils.jsonResult(result)
-      self.write(json)
-    #validation error
-    except val.InvalidList as e:
-      self.write(utils.json.dumps(str(e)))
-    #query error
-    except egg_errors.QueryNotPossible as e:
-      self.write(e.get_json())
+      profiledata = ProfileData( self.db )
+      result = profiledata.get_user_info(int(user_id))
+      self.write( json.dumps( result, ensure_ascii=True ) )
+    except egg_errors.BaseException as e :
+      self.write( e.get_json() )
       
   def delete(self, user_id):
     "Removed profile with user_id"
@@ -83,10 +82,9 @@ class LoginHandler(ProfileBase):
     try:
       result = self.profile.login(self.params)
       if result:
-        json = utils.jsonResult(result)
-        self.write(json)
+        self.write(utils.jsonRow(result))
         if not self.get_secure_cookie("user"):
-          self.set_secure_cookie("user", self.params["email"])
+          self.set_secure_cookie("user", self.params["username"])
       else:
         self.write(utils.json.dumps({ 'error': 'unknown user' }))
     #validation error

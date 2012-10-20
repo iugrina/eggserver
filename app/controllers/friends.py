@@ -24,8 +24,7 @@ class GetFriendsHandler(FriendsHandler):
         user_id = int(user_id)
         try:
             fs = self.friends.get_friends(user_id)
-            print fs
-            self.write( json.dumps( list(fs) ) )
+            self.write( json.dumps( fs ) )
         except eggErrors.BaseException as e :
             self.write( e.get_json() )
 
@@ -65,7 +64,8 @@ if __name__ == "__main__":
     db.metadata  = sqlalchemy.MetaData(bind=db)
     #self.db.echo = "debug"
 
-    friends = Friends(db)
+    f = open(conf['log']['static_path']+conf['log']['friends'], "wa")
+    friends = Friends(db, f)
 
     application = tornado.web.Application([
         (r"/profile/([0-9]+)/friends", GetFriendsHandler, dict(friends=friends)),

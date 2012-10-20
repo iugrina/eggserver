@@ -26,3 +26,18 @@ def jsonResult(result):
     i = 0
     jsonr.append(jsonRow(row))
   return json.dumps(jsonr)
+
+
+class ExceptionLogger():
+    """Class that should be used as the superclass
+    to enable some exception logging to file or standard output"""
+    def __init__(self, logging_file_pointer=None) :
+        self.lf = logging_file_pointer
+
+    def log(self, e):
+        if self.lf :
+            self.lf.write(str(datetime.datetime.utcnow()) + " :: " + str(e) + "\n")
+            self.lf.flush()
+        else:
+            print str(datetime.datetime.utcnow()) + " :: " + str(e)
+

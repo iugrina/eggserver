@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>EGG::Badges</title>
+  <link href="{{ static_url("bootstrap/css/bootstrap.min.css") }}" rel="stylesheet" />
+  
+  <style type="text/css">
+    #badges-container { margin-top: 20px; }
+    .table { margin-top: 50px; }
+    #multiSelect { width: 350px; }
+    .alert-success, .alert-error { margin-top: 20px; }
+    .delete-badge-row, .edit-badge-row { width: 30px; }
+    .hierarchy-tree-line { padding: 0 5px; }
+    #badges-tree { display: none; }
+    #badge-details-container { position: absolute; width: 300px; height: 250px; background: #8F7; left: 800px; padding: 20px; opacity: 0.9; border: 1px solid black; border-radius: 3px; }
+    .add-new-form { margin-top: 40px; }
+    .list-image { max-width: 70px; }
+    .details-image { max-width: 150px; }
+    select { background: white; }
+  </style>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="{{ static_url("bootstrap/js/bootstrap.min.js") }}"></script>
+  <script type="text/javascript" src="{{ static_url("js/badges_users.js") }}"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="row" id="badges-container">
+      <div class="navbar">
+        <div class="navbar-inner">
+          <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href="/">Badges & Users</a>
+            <div class="nav-collapse">
+              <ul class="nav">
+                <li class="home-link"><a href="/">Home</a></li>
+                <li class="active"><a href="/badges">Badges</a></li>
+                <li><a href="/users">Users</a></li>
+                <li><a href="/badges-in-users" id="">Badges to Users</a></li>
+              </ul>
+            </div><!-- /.nav-collapse -->
+          </div>
+        </div><!-- /navbar-inner -->
+      </div>
+      
+      <form name="add-new" method="post" action="/badges/edit/{{ badge.badge_id}}" enctype="multipart/form-data" class="form-horizontal add-new-form" id="">
+        <fieldset>
+          <div class="control-group">
+            <label class="control-label" for="input01">Name</label>
+            <div class="controls">
+              <input name="name" value="{{ badge.name }}" type="text" class="input-xlarge" id="input01">
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="textarea">Description</label>
+            <div class="controls">
+              <textarea name="description" class="input-xlarge" id="textarea" rows="3">{{ badge.description }}</textarea>
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <label class="control-label" for="select01">Parent</label>
+            <div class="controls">
+              <select name="parent" id="select01">
+                <option value="0">-- root</option>
+                {% if len(badges) > 0 %}
+                  {% for b in badges %}
+                    <option value="{{ b.badge_id }}"{% if b.badge_id == badge.parent %} selected="selected"{% end %}>{{ b.name }}</option>
+                  {% end %}
+                {% end %}
+              </select>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="multiSelect">Type</label>
+            <div class="controls">
+              <select name="type" size="4" id="multiSelect">
+                <option value="1"{% if badge.type == 1 %} selected="selected"{% end %}>(1) not important - children important - only one child</option>
+                <option value="2"{% if badge.type == 2 %} selected="selected"{% end %}>(2) important - no children</option>
+                <option value="3"{% if badge.type == 3 %} selected="selected"{% end %}>(3) important - children</option>
+                <option value="4"{% if badge.type == 4 %} selected="selected"{% end %}>(4) not important - children important - multiple children</option>
+              </select>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="fileInput">Image</label>
+            <div class="controls">
+              Image link: {{ badge.image_link}}<br />
+              <input name="image" class="input-file" id="fileInput" type="file">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary add-new-submit">Save changes</button>
+            <button class="btn add-new-cancel">Cancel</button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
