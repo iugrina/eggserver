@@ -8,6 +8,7 @@ import json
 
 import sqlalchemy
 import controllers
+import controllers.blacklist
 from common import utils
 import confegg
 import common.egg_errors as eggErrors
@@ -21,7 +22,7 @@ class BlacklistHandler(tornado.web.RequestHandler):
 class GetBlacklistHandler(BlacklistHandler):
     def get(self, user_id):
         user_id = int(user_id)
-        self.write( json.dumps( self.b2dic[user_id], ensure_ascii=False ) )
+        self.write( json.dumps( self.b2dic.get(user_id, []), ensure_ascii=False ) )
 
 class AddDeleteBlacklistedForUserHandler(BlacklistHandler):
     def post(self, user_id, blacklisted_id):
@@ -32,7 +33,7 @@ class AddDeleteBlacklistedForUserHandler(BlacklistHandler):
         except eggErrors.BaseException as e :
             self.write( e.get_json() )
             return
-        self.b2dic[user_id].append(blacklisted_id)
+        self.b2dic.setdefault(user_id, []).append(blacklisted_id)
     
     def delete(self, user_id, blacklisted_id):
         user_id = int(user_id)
@@ -48,23 +49,36 @@ class AddDeleteBlacklistedForUserHandler(BlacklistHandler):
 if __name__ == "__main__":
 
     conf = confegg.get_config()
+
     db = sqlalchemy.create_engine("mysql://" + conf['mysql']['username'] + ":" +
         conf['mysql']['password'] + "@" + conf['mysql']['host'] + "/" +
         conf['mysql']['database'])
     db.metadata  = sqlalchemy.MetaData(bind=db)
     #self.db.echo = "debug"
 
-    f = open(conf['log']['static_path']+conf['log']['blacklist'], "wa")
+    handlers = []
 
-    blacklist2db = Blacklist(db, f)
+
+
+    fblacklist = open(conf['log']['static_path']+conf['log']['blacklist'], "wa")
+
+    blacklist2db = Blacklist(db, fblacklist)
     # radi brzine radimo s dict-om !!!
     blacklist2dic = blacklist2db.get_all_blacklisted_as_dict()
 
-    application = tornado.web.Application([
-        (r"/profile/([0-9]+)/blacklist", GetBlacklistHandler, dict(blacklist2db=blacklist2db, blacklist2dic=blacklist2dic)),
-        (r"/profile/([0-9]+)/blacklist/([0-9]+)", AddDeleteBlacklistedForUserHandler, dict(blacklist2db=blacklist2db, blacklist2dic=blacklist2dic)),
-    ])
+    handlers.extend([
+        (r"/profile/([0-9]+)/blacklist", controllers.blacklist.GetBlacklistHandler, dict(blacklist2db=blacklist2db, blacklist2dic=blacklist2dic)),
+        (r"/profile/([0-9]+)/blacklist/([0-9]+)", controllers.blacklist.AddDeleteBlacklistedForUserHandler, dict(blacklist2db=blacklist2db, blacklist2dic=blacklist2dic)),
+        ])
 
+
+
+    settings = dict(
+      debug=True,
+      cookie_secret="61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
+    )
+
+    application = tornado.web.Application( handlers, **settings)
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
 
