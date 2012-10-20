@@ -54,7 +54,7 @@ class Profile:
     row = result.fetchone()
     
     if bcrypt.hashpw(params['password'], row.password) == row.password:
-      return row
+      return dict(row)
     else:
       return False
     raise egg_errors.QueryNotPossible
