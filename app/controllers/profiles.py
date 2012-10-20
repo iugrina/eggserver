@@ -20,6 +20,9 @@ class ProfileBase(tornado.web.RequestHandler):
     # cem' ovo ???
     return self.params
   
+  def set_default_headers(self):
+    conf = confegg.get_config()
+    self.set_header('Access-Control-Allow-Origin', conf['client_url'])
   
 class ProfilesHandler(ProfileBase):
   """
