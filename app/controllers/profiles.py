@@ -82,9 +82,11 @@ class LoginHandler(ProfileBase):
     try:
       result = self.profile.login(self.params)
       if result:
-        self.write(utils.jsonRow(result))
+#        self.write(json.dumps(result))
         if not self.get_secure_cookie("user"):
           self.set_secure_cookie("user", self.params["username"])
+        if not self.get_secure_cookie("id"):
+          self.set_secure_cookie("id", str(result["user_id"]) )
       else:
         self.write('error')
     #validation error
@@ -122,17 +124,18 @@ if __name__ == "__main__":
     db.metadata  = sqlalchemy.MetaData(bind=db)
     #db.echo = "debug"
 
+    settings = dict(
+      debug=True,
+      cookie_secret="61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
+    )
+
     app = tornado.web.Application([
       (r"/profile/", controllers.profiles.ProfilesHandler, dict(db=db)),
       (r"/profile/([0-9]+)", controllers.profiles.ProfileHandler, dict(db=db)),
       (r"/profile/login/", controllers.profiles.LoginHandler, dict(db=db)),
       (r"/profile/signup/", controllers.profiles.SignupHandler, dict(db=db)),
-    ])
+    ], **settings)
 
-    settings = dict(
-      debug=True,
-      cookie_secret="61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
-    )
 
     app.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
