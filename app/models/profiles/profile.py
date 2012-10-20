@@ -52,7 +52,7 @@ class Profile:
     user = self.mysql_tables.users.c
     result = self.mysql_tables.users.select((user.username == params['username'])).execute()
     row = result.fetchone()
-    
+
     if bcrypt.hashpw(params['password'], row.password) == row.password:
       return dict(row)
     else:

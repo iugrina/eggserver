@@ -82,7 +82,7 @@ class LoginHandler(ProfileBase):
     try:
       result = self.profile.login(self.params)
       if result:
-#        self.write(json.dumps(result))
+        self.write(json.dumps(result))
         if not self.get_secure_cookie("user"):
           self.set_secure_cookie("user", self.params["username"])
         if not self.get_secure_cookie("id"):
