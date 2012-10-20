@@ -71,7 +71,7 @@ if __name__ == "__main__":
         (r"/profile/([0-9]+)/photos/friend", GetProfileImagesByTypeHandler, dict(profileimages=profileimages, images_path=images_path, t='friend')),
         (r"/profile/([0-9]+)/photos/profile", GetProfileImagesByTypeHandler, dict(profileimages=profileimages, images_path=images_path, t='profile')),
         (r"/profile/([0-9]+)/photos/other", GetProfileImagesByTypeHandler, dict(profileimages=profileimages, images_path=images_path, t='other')),
-        (r"/static/images/(.*)", tornado.web.StaticFileHandler, {"path": conf['env']['static_path']+conf['images']['images_root']}),
+        (r""+images_path+"/(.*)", tornado.web.StaticFileHandler, {"path": conf['env']['static_path']+conf['images']['images_root']}),
     ], debug=True)
 
     application.listen(8888)
