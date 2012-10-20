@@ -112,6 +112,9 @@ class Badges( ExceptionLogger ):
             self.log(e)
             raise egg_errors.QueryNotPossible
 
+        if badges.rowcount == 0 :
+            return []
+
         R = dict()
         arg = 'parent'
 
