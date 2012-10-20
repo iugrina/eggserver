@@ -33,6 +33,7 @@
     "friends": "friends.log",
     "badges": "badges.log",
     "blacklist": "blacklist.log",
-    "images": "images.log"
+    "images": "images.log",
+    "profiles": "profiles.log"
   }
 }
