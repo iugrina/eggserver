@@ -7,6 +7,8 @@ import tornado.escape
 import mongokit
 import json
 
+import confegg
+
 import models.baskets.dbproxy as dbproxy
 import common.egg_errors as eggErrors
 from models.baskets.mongodb_model import Basket
@@ -107,7 +109,9 @@ class AddDelUserFromBasketHandler(BasketHandler):
 
                 
 if __name__ == "__main__":
-    con = mongokit.Connection('localhost', 27017)
+    conf = confegg.get_config()
+
+    con = mongokit.Connection(conf['mongo']['host'], conf['mongo']['port'])
     con.register([Basket])
     mongodb = con
 
