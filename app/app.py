@@ -163,9 +163,6 @@ class Application(tornado.web.Application):
 
 
 
-
-
-
     settings = dict(
       debug=debugconstants.debug,
       cookie_secret=debugconstants.cookie_secret,
@@ -175,7 +172,7 @@ class Application(tornado.web.Application):
 
 
 if __name__ == "__main__":
-  app = Application()
-  app.listen(8888)
-  tornado.ioloop.IOLoop.instance().start()
+    app = Application()
+    app.listen(8888)
+    tornado.ioloop.IOLoop.instance().start()
 

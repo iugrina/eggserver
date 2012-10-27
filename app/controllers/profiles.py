@@ -1,13 +1,20 @@
-import json
-import sqlalchemy
+# tornado
 import tornado.web
 
+# other python
+import json
+import sqlalchemy
 from lib.voluptuous import voluptuous as val
-from common import utils, egg_errors, debugconstants
+
+# egg
 import confegg
+from common import utils, egg_errors, debugconstants
+
 import controllers
 import controllers.profiles
+
 from models.profiles.profile import Profile, ProfileData
+
 
 class ProfileBase(tornado.web.RequestHandler):
   def initialize(self, db):
@@ -28,6 +35,7 @@ class ProfileBase(tornado.web.RequestHandler):
 
   def get_current_user(self):
     return self.get_secure_cookie("id")
+
 
 class ProfilesHandler(ProfileBase):
   """
