@@ -23,6 +23,7 @@ class ProfileBase(tornado.web.RequestHandler):
   def set_default_headers(self):
     conf = confegg.get_config()
     self.set_header('Access-Control-Allow-Origin', conf['client_url'])
+    self.set_header('Access-Control-Allow-Credentials', 'true')
   
 class ProfilesHandler(ProfileBase):
   """
