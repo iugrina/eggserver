@@ -1,22 +1,34 @@
 #!/usr/bin/env python
 
+# tornado
 import tornado.ioloop
 import tornado.web
 import tornado.escape
 
+# other python
 import mongokit
 import json
 
+# egg
 import confegg
+from common import utils, debugconstants, egg_errors
 
 import models.recommended.recommended
-import common.egg_errors as eggErrors
 from models.recommended.mongodb_model import Recommended
 
  
 class BasketHandler(tornado.web.RequestHandler):
     def initialize(self, dbp):
         self.dbp = dbp
+
+    def get_current_user(self):
+        return self.get_secure_cookie("id")
+
+    def prepare(self):
+        if debugconstants.eggAuthenticate==True and not self.current_user :
+            self.write( egg_errors.UnauthenticatedException().get_json() )
+            self.finish()
+
 
 
 class GetRecommendedHandler(BasketHandler):
@@ -25,7 +37,7 @@ class GetRecommendedHandler(BasketHandler):
         try:
             recommended = self.dbp.get_recommended(user_id)
             self.write( json.dumps( recommended, ensure_ascii=False ) )
-        except eggErrors.BaseException as e :
+        except egg_errors.BaseException as e :
             self.write( e.get_json() )
 
                 
@@ -45,16 +57,12 @@ if __name__ == "__main__":
         (r"/profile/([0-9]+)/recommended", GetRecommendedHandler, dict(dbp=recommended_dbp)),
         ])
 
-
-
     settings = dict(
-      debug=True,
-      cookie_secret="61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
+      debug=debugconstants.debug,
+      cookie_secret=debugconstants.cookie_secret,
     )
 
     application = tornado.web.Application( handlers, **settings)
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
-
-
 

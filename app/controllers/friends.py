@@ -1,22 +1,33 @@
 #!/usr/bin/env python
 
+# tornado
 import tornado.ioloop
 import tornado.web
 import tornado.escape
 
+# other python
 import json
-
 import sqlalchemy
-import controllers
-from common import utils
+
+# egg
 import confegg
-import common.egg_errors as eggErrors
+from common import utils, debugconstants, egg_errors
+
+import controllers
 from models.friends.friends import Friends
 
     
 class FriendsHandler(tornado.web.RequestHandler):
     def initialize(self, friends ):
         self.friends = friends
+
+    def get_current_user(self):
+        return self.get_secure_cookie("id")
+
+    def prepare(self):
+        if debugconstants.eggAuthenticate==True and not self.current_user :
+            self.write( egg_errors.UnauthenticatedException().get_json() )
+            self.finish()
 
 
 class GetFriendsHandler(FriendsHandler):
@@ -25,8 +36,9 @@ class GetFriendsHandler(FriendsHandler):
         try:
             fs = self.friends.get_friends(user_id)
             self.write( json.dumps( fs ) )
-        except eggErrors.BaseException as e :
+        except egg_errors.BaseException as e :
             self.write( e.get_json() )
+
 
 class AddDeleteFriendHandler(FriendsHandler):
     def post(self, user_id, friend_id):
@@ -34,7 +46,7 @@ class AddDeleteFriendHandler(FriendsHandler):
         friend_id = int(friend_id)
         try:
             self.friends.add_friend(user_id, friend_id)
-        except eggErrors.BaseException as e :
+        except egg_errors.BaseException as e :
             self.write( e.get_json() )
     
     def delete(self, user_id, friend_id):
@@ -42,7 +54,7 @@ class AddDeleteFriendHandler(FriendsHandler):
         friend_id = int(friend_id)
         try:
             self.friends.delete_friend(user_id, friend_id)
-        except eggErrors.BaseException as e :
+        except egg_errors.BaseException as e :
             self.write( e.get_json() )
 
 
@@ -50,7 +62,7 @@ class ApproveFriendHandler(FriendsHandler):
     def post(self, user_id, friend_id): 
         try:
             self.friends.approve_friend(user_id, friend_id)
-        except eggErrors.BaseException as e :
+        except egg_errors.BaseException as e :
             self.write( e.get_json() )
 
 
@@ -67,14 +79,17 @@ if __name__ == "__main__":
     f = open(conf['log']['static_path']+conf['log']['friends'], "wa")
     friends = Friends(db, f)
 
+    settings = dict(
+      debug=debugconstants.debug,
+      cookie_secret=debugconstants.cookie_secret,
+    )
+
     application = tornado.web.Application([
         (r"/profile/([0-9]+)/friends", GetFriendsHandler, dict(friends=friends)),
         (r"/profile/([0-9]+)/friends/([0-9]+)", AddDeleteFriendHandler, dict(friends=friends)),
         (r"/profile/([0-9]+)/friends/approve/([0-9]+)", ApproveFriendHandler, dict(friends=friends)),
-    ])
+    ], **settings)
 
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
-
-
 
