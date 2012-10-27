@@ -57,7 +57,7 @@ class ProfileHandler(ProfileBase):
     "Retrieves profile with user_id"
     try:
       result = self.profiledata.get_user_info(int(user_id))
-      self.write( json.dumps( result, ensure_ascii=True ) )
+      self.write( json.dumps(result, ensure_ascii=False) )
     except egg_errors.BaseException as e :
       self.write( e.get_json() )
       
@@ -94,7 +94,7 @@ class LoginHandler(ProfileBase):
         result['dob'] = str(result['dob'])
         result['password'] = None
         print result
-        self.write(json.dumps(result))
+        self.write(json.dumps(result, ensure_ascii=False))
         if not self.get_secure_cookie("user"):
           self.set_secure_cookie("user", self.params["username"])
         if not self.get_secure_cookie("id"):

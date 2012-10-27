@@ -97,12 +97,18 @@ class ProfileData():
         #ovo bi trebalo prilagoditi kad napravimo kod za speech bubble
         speech_bubble = "evo " +  basic_user_info['first_name'] + " nesto prica"
 
-        r = { "user_id": basic_user_info['user_id'], "first_name": basic_user_info['first_name'],
-            "last_name": basic_user_info['last_name'], "nickname": basic_user_info['nickname'],
-            "activity": activity, "online": online, "status": speech_bubble,
-            "profile_image": profile_image,
-            "friends": friends, "eggs": eggs,
-            "badges": badges }
+        r = { "user_id": basic_user_info['user_id'],
+              "first_name": utils.str2unicode(basic_user_info['first_name']),
+              "last_name": utils.str2unicode(basic_user_info['last_name']),
+              "nickname": utils.str2unicode(basic_user_info['nickname']),
+              "activity": activity,
+              "online": online,
+              "status": utils.str2unicode(speech_bubble),
+              "profile_image": profile_image,
+              "friends": friends,
+              "eggs": eggs,
+              "badges": badges
+              }
 
         return r
 
