@@ -61,6 +61,7 @@ class Profile:
   
   def signup(self, params):
     "Sign up the user"
+    params['password'] = bcrypt.hashpw(params['password'], bcrypt.gensalt())
     profile_schema.validate_profiles(params)
     self.db.execute(self.mysql_tables.users.insert().values(params))
 
