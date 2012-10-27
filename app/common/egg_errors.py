@@ -12,8 +12,14 @@ class BaseException(Exception):
 
 
 # 
-# global exceptions 100-999
+# global exceptions 10-999
 #
+
+class UnauthenticatedException(BaseException):
+    def __init__(self):
+        BaseException.__init__(self)
+        self.error_code = 10 
+        self.error_message = u"You shoud first authenticate!!!"
 
 class InvalidJSONException(BaseException):
     def __init__(self):
