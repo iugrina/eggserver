@@ -6,7 +6,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.database
 from tornado import autoreload
-import confegg
+import confbu
 
 class ProtoHandler(tornado.web.RequestHandler):
   def initialize(self, db):
@@ -201,12 +201,12 @@ class BadgesInUsersHandler(ProtoHandler):
     badges_in_users = self.db.query("select * from badges_users")
     self.render("badges_in_users.html", badges_in_users=badges_in_users, users=users, badges=badges, updated=True, error=False)
 
-conf = confegg.get_config()
+conf = confbu.get_config()
 db = tornado.database.Connection(conf['mysql']['host'], conf['mysql']['database'], user=conf['mysql']['username'], password=conf['mysql']['password'])
 
 settings = {
   "debug": True,
-  "static_path": os.path.join(os.path.dirname(__file__), "static"),
+  "static_path": conf['env']['static_path'],
 }
 
 application = tornado.web.Application([

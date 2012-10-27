@@ -1,0 +1,14 @@
+{
+  "mysql": {
+    "host": "localhost",
+    "port": 3306,
+    "database": "eggdb",
+    "username": "egg",
+    "password": ""
+  },
+  "env": {
+    "static_path": "path to static folder"
+    "static_url_path": "/static",
+    "static_vhost" : "localhost:8880"
+  }
+}
