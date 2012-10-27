@@ -11,7 +11,7 @@ import sqlalchemy
 
 # egg
 import confegg
-from common import utils, egg_errors
+from common import utils, egg_errors, debugconstants
 from lib.voluptuous import voluptuous as val
 
 import controllers
@@ -167,8 +167,8 @@ class Application(tornado.web.Application):
 
 
     settings = dict(
-      debug=True,
-      cookie_secret="61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
+      debug=debugconstants.debug,
+      cookie_secret=debugconstants.cookie_secret,
     )
 
     tornado.web.Application.__init__(self, handlers, **settings)

@@ -1,9 +1,10 @@
-import tornado.web
 import json
-from common import utils, egg_errors
-from lib.voluptuous import voluptuous as val
-import confegg
 import sqlalchemy
+import tornado.web
+
+from lib.voluptuous import voluptuous as val
+from common import utils, egg_errors, debugconstants
+import confegg
 import controllers
 import controllers.profiles
 from models.profiles.profile import Profile, ProfileData
@@ -24,7 +25,10 @@ class ProfileBase(tornado.web.RequestHandler):
     conf = confegg.get_config()
     self.set_header('Access-Control-Allow-Origin', conf['client_url'])
     self.set_header('Access-Control-Allow-Credentials', 'true')
-  
+
+  def get_current_user(self):
+    return self.get_secure_cookie("id")
+
 class ProfilesHandler(ProfileBase):
   """
   API endpoint: /profile/
@@ -56,6 +60,11 @@ class ProfileHandler(ProfileBase):
 
   def get(self, user_id):
     "Retrieves profile with user_id"
+
+    if debugconstants.eggAuthenticate==True and not self.current_user :
+      self.write( egg_errors.UnauthenticatedException().get_json() )
+      return
+
     try:
       result = self.profiledata.get_user_info(int(user_id))
       self.write( json.dumps(result, ensure_ascii=False) )
@@ -64,6 +73,11 @@ class ProfileHandler(ProfileBase):
       
   def delete(self, user_id):
     "Removed profile with user_id"
+
+    if debugconstants.eggAuthenticate==True and not self.current_user :
+      self.write( egg_errors.UnauthenticatedException().get_json() )
+      return
+
     try:
       self.profile.delete_user(int(user_id))
     #validation error
@@ -137,8 +151,8 @@ if __name__ == "__main__":
     #db.echo = "debug"
 
     settings = dict(
-      debug=True,
-      cookie_secret="61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
+      debug=debugconstants.debug,
+      cookie_secret=debugconstants.cookie_secret,
     )
 
     f = open(conf['log']['static_path']+conf['log']['profiles'], "wa")
