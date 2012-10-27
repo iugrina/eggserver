@@ -41,3 +41,10 @@ class ExceptionLogger():
         else:
             print str(datetime.datetime.utcnow()) + " :: " + str(e)
 
+def str2unicode(s, charset='utf-8'):
+    """Converts str object to unicode object
+       Useful with results from sqlalchemy/MySQL
+    """
+    if s != None :
+        return unicode( s.decode(charset) )
+
