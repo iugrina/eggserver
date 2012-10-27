@@ -2,7 +2,7 @@ import sqlalchemy
 from sqlalchemy import and_
 from common.mysqlTables import MySQLTables
 from common import egg_errors
-from common.utils import ExceptionLogger
+from common.utils import ExceptionLogger, str2unicode
 #import schema as badges_users_schema
 
 
@@ -81,11 +81,12 @@ class BadgesUsers( ExceptionLogger ):
 
 
 class Badges( ExceptionLogger ):
-    def __init__(self, db, logging_file=None):
+    def __init__(self, db, logging_file=None, images_path=None):
         self.db = db
         self.mysql_tables = MySQLTables(db)
         self.table = self.mysql_tables.badges
         self.lf = logging_file
+        self.images_path = images_path
 
     def get_badges(self):
         try:
@@ -94,15 +95,25 @@ class Badges( ExceptionLogger ):
             self.log(e)
             raise egg_errors.QueryNotPossible
 
-        return [x.values() for x in badges]
+        if badges.rowcount == 0 :
+            return []
 
+        res = [dict(x) for x in badges]
+
+        for r in res :
+            if self.images_path :
+                r['image_link'] = self.images_path + "/" + r['image_link']
+            r['name'] = str2unicode(r['name'])
+            r['description'] = str2unicode(r['description'])
+
+        return res
 
     def __genTreeRec__( self, x, parent_ids, R ) :
         """Helper function for get_badges_as_tree"""
         if x['badge_id'] not in parent_ids :
-            return( {'node': x.values(), 'children': None} )
+            return( {'node': x, 'children': None} )
         else :
-            return( { 'node': x.values(), 'children' : [ self.__genTreeRec__(x, parent_ids, R) for x in R[ x['badge_id'] ] ] } )
+            return( { 'node': x, 'children' : [ self.__genTreeRec__(x, parent_ids, R) for x in R[ x['badge_id'] ] ] } )
 
     def get_badges_as_tree(self):
         """Generate badges tree"""
@@ -115,12 +126,19 @@ class Badges( ExceptionLogger ):
         if badges.rowcount == 0 :
             return []
 
+        res = [dict(x) for x in badges]
+
+        for r in res :
+            if self.images_path :
+                r['image_link'] = self.images_path + "/" + r['image_link']
+            r['name'] = str2unicode(r['name'])
+            r['description'] = str2unicode(r['description'])
+
         R = dict()
-        arg = 'parent'
 
         # creates dict with key=parent_id
         # value=list(all of the children of that parent)
-        [ R.setdefault( x[arg], [] ).append(x) for x in badges ]
+        [ R.setdefault( x['parent'], [] ).append(x) for x in res ]
 
         parent_ids = R.keys()
 

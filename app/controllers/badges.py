@@ -85,10 +85,13 @@ if __name__ == "__main__":
     db.metadata  = sqlalchemy.MetaData(bind=db)
     #self.db.echo = "debug"
 
+    images_path = conf['env']['static_url_path'] + conf['images']['images_root']
+    badges_path = images_path + conf['images']['badges']
+
     f = open(conf['log']['static_path']+conf['log']['badges'], "wa")
 
     badgesusers = BadgesUsers(db, f)
-    badges = Badges(db, f)
+    badges = Badges(db, f, badges_path)
 
     # korist cemo vec gotovu listu i dict jer ce se bedzevi
     # uredjivati sa zasebnim alatom u "maintenance mode"-u

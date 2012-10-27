@@ -47,18 +47,23 @@ class Application(tornado.web.Application):
 
     handlers = []
 
+    images_path = conf['env']['static_url_path'] + conf['images']['images_root']
 
     #
     # badges
     #
     fbadges = open(conf['log']['static_path']+conf['log']['badges'], "wa")
-    badgesusers = BadgesUsers(db, fbadges)
-    badges = Badges(db, fbadges)
 
-    # korist cemo vec gotovu listu i dict jer ce se bedzevi
+    badges_path = images_path + conf['images']['badges']
+
+    badgesusers = BadgesUsers(db, fbadges)
+    badges = Badges(db, logging_file=fbadges, images_path=badges_path)
+
+    # koristit cemo vec gotovu listu i dict jer ce se bedzevi
     # uredjivati sa zasebnim alatom u "maintenance mode"-u
     badgeslist = badges.get_badges()
-    badgestree = badges.get_badges_as_tree()
+#    badgestree = badges.get_badges_as_tree()
+    badgestree = None
 
     handlers.extend([
         (r"/badges", controllers.badges.GetBadgesHandler, dict(badges=badges, badgeslist=badgeslist, badgestree=badgestree)),
@@ -114,7 +119,6 @@ class Application(tornado.web.Application):
     fimages = open(conf['log']['static_path']+conf['log']['images'], "wa")
 
     profileimages = ProfileImages(db, fimages)
-    images_path = conf['env']['static_url_path'] + conf['images']['images_root']
 
     handlers.extend( [
         (r"/profile/([0-9]+)/photos", controllers.images.GetAllProfileImagesHandler, dict(profileimages=profileimages, images_path=images_path)),
