@@ -62,8 +62,7 @@ class Application(tornado.web.Application):
     # koristit cemo vec gotovu listu i dict jer ce se bedzevi
     # uredjivati sa zasebnim alatom u "maintenance mode"-u
     badgeslist = badges.get_badges()
-#    badgestree = badges.get_badges_as_tree()
-    badgestree = None
+    badgestree = badges.get_badges_as_tree()
 
     handlers.extend([
         (r"/badges", controllers.badges.GetBadgesHandler, dict(badges=badges, badgeslist=badgeslist, badgestree=badgestree)),
