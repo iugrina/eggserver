@@ -91,10 +91,6 @@ class LoginHandler(ProfileBase):
     try:
       result = self.profile.login(self.params)
       if result:
-        result['created'] = str(result['created'])
-        result['dob'] = str(result['dob'])
-        result['password'] = None
-        print result
         self.write(json.dumps(result, ensure_ascii=False))
         if not self.get_secure_cookie("user"):
           self.set_secure_cookie("user", self.params["username"])
