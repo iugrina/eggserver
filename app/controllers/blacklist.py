@@ -33,12 +33,26 @@ class BlacklistHandler(tornado.web.RequestHandler):
 class GetBlacklistHandler(BlacklistHandler):
     def get(self, user_id):
         user_id = int(user_id)
+
+        # check privileges
+        # only user can see/change it's blacklist
+        if int(self.current_user) != user_id :
+            self.write( egg_errors.PrivilegeException().get_json() )
+            return
+
         self.write( json.dumps( self.b2dic.get(user_id, []), ensure_ascii=False ) )
 
 
 class AddDeleteBlacklistedForUserHandler(BlacklistHandler):
     def post(self, user_id, blacklisted_id):
         user_id = int(user_id)
+
+        # check privileges
+        # only user can see/change it's blacklist
+        if int(self.current_user) != user_id :
+            self.write( egg_errors.PrivilegeException().get_json() )
+            return
+
         blacklisted_id = int(blacklisted_id)
         try:
             self.b2db.add_to_blacklist(user_id, blacklisted_id)
@@ -49,6 +63,13 @@ class AddDeleteBlacklistedForUserHandler(BlacklistHandler):
     
     def delete(self, user_id, blacklisted_id):
         user_id = int(user_id)
+
+        # check privileges
+        # only user can see/change it's blacklist
+        if int(self.current_user) != user_id :
+            self.write( egg_errors.PrivilegeException().get_json() )
+            return
+
         blacklisted_id = int(blacklisted_id)
         try:
             self.b2db.delete_from_blacklist(user_id, blacklisted_id)

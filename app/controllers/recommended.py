@@ -34,6 +34,13 @@ class BasketHandler(tornado.web.RequestHandler):
 class GetRecommendedHandler(BasketHandler):
     def get(self, user_id):
         user_id = int(user_id)
+
+        # check privileges
+        # only user can see it's recommended profiles
+        if int(self.current_user) != user_id :
+            self.write( egg_errors.PrivilegeException().get_json() )
+            return
+
         try:
             recommended = self.dbp.get_recommended(user_id)
             self.write( json.dumps( recommended, ensure_ascii=False ) )
