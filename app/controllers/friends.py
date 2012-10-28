@@ -11,7 +11,7 @@ import sqlalchemy
 
 # egg
 import confegg
-from common import utils, debugconstants, egg_errors
+from common import utils, debugconstants, egg_errors, decorators
 
 import controllers
 from models.friends.friends import Friends
@@ -24,13 +24,9 @@ class FriendsHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("id")
 
-    def prepare(self):
-        if debugconstants.eggAuthenticate==True and not self.current_user :
-            self.write( egg_errors.UnauthenticatedException().get_json() )
-            self.finish()
-
 
 class GetFriendsHandler(FriendsHandler):
+    @decorators.authenticated
     def get(self, user_id):
         user_id = int(user_id)
         try:
@@ -41,6 +37,7 @@ class GetFriendsHandler(FriendsHandler):
 
 
 class AddDeleteFriendHandler(FriendsHandler):
+    @decorators.authenticated
     def post(self, user_id, friend_id):
         user_id = int(user_id)
         friend_id = int(friend_id)
@@ -49,6 +46,7 @@ class AddDeleteFriendHandler(FriendsHandler):
         except egg_errors.BaseException as e :
             self.write( e.get_json() )
     
+    @decorators.authenticated
     def delete(self, user_id, friend_id):
         user_id = int(user_id)
         friend_id = int(friend_id)
@@ -59,6 +57,7 @@ class AddDeleteFriendHandler(FriendsHandler):
 
 
 class ApproveFriendHandler(FriendsHandler):
+    @decorators.authenticated
     def post(self, user_id, friend_id): 
         try:
             self.friends.approve_friend(user_id, friend_id)

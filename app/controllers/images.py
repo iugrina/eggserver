@@ -11,7 +11,7 @@ import sqlalchemy
 
 # egg
 import confegg
-from common import utils, debugconstants, egg_errors
+from common import utils, debugconstants, egg_errors, decorators
 
 import controllers
 from models.images.images import ProfileImages
@@ -26,13 +26,9 @@ class ProfileImagesHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("id")
 
-    def prepare(self):
-        if debugconstants.eggAuthenticate==True and not self.current_user :
-            self.write( egg_errors.UnauthenticatedException().get_json() )
-            self.finish()
-
 
 class GetAllProfileImagesHandler(ProfileImagesHandler):
+    @decorators.authenticated
     def get(self, user_id):
         user_id = int(user_id)
         try:
@@ -44,6 +40,7 @@ class GetAllProfileImagesHandler(ProfileImagesHandler):
             self.write( e.get_json() )
 
 class GetProfileImagesByTypeHandler(ProfileImagesHandler):
+    @decorators.authenticated
     def get(self, user_id):
         user_id = int(user_id)
         try:

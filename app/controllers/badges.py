@@ -8,7 +8,7 @@ import json
 
 import sqlalchemy
 import controllers
-from common import utils, debugconstants, egg_errors
+from common import utils, debugconstants, egg_errors, decorators
 import confegg
 from models.badges.badges import BadgesUsers, Badges
 
@@ -21,13 +21,9 @@ class BadgesHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("id")
 
-    def prepare(self):
-        if debugconstants.eggAuthenticate==True and not self.current_user :
-            self.write( egg_errors.UnauthenticatedException().get_json() )
-            self.finish()
-
 
 class GetBadgesHandler(BadgesHandler):
+    @decorators.authenticated
     def get(self):
         self.write( json.dumps( self.blist, ensure_ascii=False ) )
 #        try:
@@ -38,6 +34,7 @@ class GetBadgesHandler(BadgesHandler):
 
 
 class GetBadgesTreeHandler(BadgesHandler):
+    @decorators.authenticated
     def get(self):
         self.write( json.dumps( self.btree, ensure_ascii=False ) )
 #        try:
@@ -54,13 +51,9 @@ class BadgesUsersHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("id")
 
-    def prepare(self):
-        if debugconstants.eggAuthenticate==True and not self.current_user :
-            self.write( egg_errors.UnauthenticatedException().get_json() )
-            self.finish()
-
 
 class GetBadgesForUserHandler(BadgesUsersHandler):
+    @decorators.authenticated
     def get(self, user_id ):
         user_id = int(user_id)
         try:
@@ -70,6 +63,7 @@ class GetBadgesForUserHandler(BadgesUsersHandler):
             self.write( e.get_json() )
 
 class AddChangeDeleteBadgesForUserHandler(BadgesUsersHandler):
+    @decorators.authenticated
     def post(self, user_id, friend_id):
         user_id = int(user_id)
         friend_id = int(friend_id)
@@ -84,6 +78,7 @@ class AddChangeDeleteBadgesForUserHandler(BadgesUsersHandler):
             e = egg_errors.InvalidJSONException()
             self.write( e.get_json() )
     
+    @decorators.authenticated
     def delete(self, user_id, friend_id):
         user_id = int(user_id)
         friend_id = int(friend_id)

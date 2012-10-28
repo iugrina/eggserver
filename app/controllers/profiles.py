@@ -8,7 +8,7 @@ from lib.voluptuous import voluptuous as val
 
 # egg
 import confegg
-from common import utils, egg_errors, debugconstants
+from common import utils, egg_errors, debugconstants, decorators
 
 import controllers
 import controllers.profiles
@@ -65,27 +65,18 @@ class ProfileHandler(ProfileBase):
     super(ProfileHandler, self).initialize(db)
     self.profiledata = profiledata
 
-
+  @decorators.authenticated
   def get(self, user_id):
     "Retrieves profile with user_id"
-
-    if debugconstants.eggAuthenticate==True and not self.current_user :
-      self.write( egg_errors.UnauthenticatedException().get_json() )
-      return
-
     try:
       result = self.profiledata.get_user_info(int(user_id))
       self.write( json.dumps(result, ensure_ascii=False) )
     except egg_errors.BaseException as e :
       self.write( e.get_json() )
       
+  @decorators.authenticated
   def delete(self, user_id):
     "Removed profile with user_id"
-
-    if debugconstants.eggAuthenticate==True and not self.current_user :
-      self.write( egg_errors.UnauthenticatedException().get_json() )
-      return
-
     try:
       self.profile.delete_user(int(user_id))
     #validation error

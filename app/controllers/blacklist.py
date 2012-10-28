@@ -11,7 +11,7 @@ import sqlalchemy
 
 # egg
 import confegg
-from common import utils, debugconstants, egg_errors
+from common import utils, debugconstants, egg_errors, decorators
 import controllers
 import controllers.blacklist
 from models.blacklist.blacklist import Blacklist
@@ -24,34 +24,33 @@ class BlacklistHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("id")
 
-    def prepare(self):
-        if debugconstants.eggAuthenticate==True and not self.current_user :
-            self.write( egg_errors.UnauthenticatedException().get_json() )
-            self.finish()
-
 
 class GetBlacklistHandler(BlacklistHandler):
+    @decorators.authenticated
     def get(self, user_id):
         user_id = int(user_id)
 
-        # check privileges
-        # only user can see/change it's blacklist
-        if int(self.current_user) != user_id :
-            self.write( egg_errors.PrivilegeException().get_json() )
-            return
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see/change it's blacklist
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
 
         self.write( json.dumps( self.b2dic.get(user_id, []), ensure_ascii=False ) )
 
 
 class AddDeleteBlacklistedForUserHandler(BlacklistHandler):
+    @decorators.authenticated
     def post(self, user_id, blacklisted_id):
         user_id = int(user_id)
 
-        # check privileges
-        # only user can see/change it's blacklist
-        if int(self.current_user) != user_id :
-            self.write( egg_errors.PrivilegeException().get_json() )
-            return
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see/change it's blacklist
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
 
         blacklisted_id = int(blacklisted_id)
         try:
@@ -61,14 +60,16 @@ class AddDeleteBlacklistedForUserHandler(BlacklistHandler):
             return
         self.b2dic.setdefault(user_id, []).append(blacklisted_id)
     
+    @decorators.authenticated
     def delete(self, user_id, blacklisted_id):
         user_id = int(user_id)
 
-        # check privileges
-        # only user can see/change it's blacklist
-        if int(self.current_user) != user_id :
-            self.write( egg_errors.PrivilegeException().get_json() )
-            return
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see/change it's blacklist
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
 
         blacklisted_id = int(blacklisted_id)
         try:

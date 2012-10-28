@@ -11,7 +11,7 @@ import json
 
 # egg
 import confegg
-from common import utils, debugconstants, egg_errors
+from common import utils, debugconstants, egg_errors, decorators
 
 import models.baskets.dbproxy as dbproxy
 from models.baskets.mongodb_model import Basket
@@ -24,13 +24,9 @@ class BasketHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("id")
 
-    def prepare(self):
-        if debugconstants.eggAuthenticate==True and not self.current_user :
-            self.write( egg_errors.UnauthenticatedException().get_json() )
-            self.finish()
-
 
 class GetChangeOrderBasketsHandler(BasketHandler):
+    @decorators.authenticated
     def get(self, user_id):
         user_id = int(user_id)
         try:
@@ -39,6 +35,7 @@ class GetChangeOrderBasketsHandler(BasketHandler):
         except egg_errors.BaseException as e :
             self.write( e.get_json() )
 
+    @decorators.authenticated
     def post(self, user_id):
         user_id = int(user_id)
         try:
@@ -53,6 +50,7 @@ class GetChangeOrderBasketsHandler(BasketHandler):
 
 
 class AddBasketHandler(BasketHandler):
+    @decorators.authenticated
     def post(self, user_id): 
         basket_name = self.get_argument("basket_name")
 
@@ -68,6 +66,7 @@ class AddBasketHandler(BasketHandler):
 
 
 class GetDelChangeOrderBasketHandler(BasketHandler):
+    @decorators.authenticated
     def get(self, user_id, basket_id):
         user_id = int(user_id)
         basket_id = int(basket_id)
@@ -77,6 +76,7 @@ class GetDelChangeOrderBasketHandler(BasketHandler):
         except egg_errors.BaseException as e :
             self.write( e.get_json() )
 
+    @decorators.authenticated
     def delete(self, user_id, basket_id):
         user_id = int(user_id)
         basket_id = int(basket_id)
@@ -85,6 +85,7 @@ class GetDelChangeOrderBasketHandler(BasketHandler):
         except egg_errors.BaseException as e :
             self.write( e.get_json() )
 
+    @decorators.authenticated
     def post(self, user_id, basket_id):
         user_id = int(user_id)
         basket_id = int(basket_id)
@@ -100,6 +101,7 @@ class GetDelChangeOrderBasketHandler(BasketHandler):
 
 
 class AddDelUserFromBasketHandler(BasketHandler):
+    @decorators.authenticated
     def post(self, user_id, basket_id, add_user_id):
         user_id = int(user_id)
         basket_id = int(basket_id)
@@ -109,6 +111,7 @@ class AddDelUserFromBasketHandler(BasketHandler):
         except egg_errors.BaseException as e :
             self.write( e.get_json() )
 
+    @decorators.authenticated
     def delete(self, user_id, basket_id, add_user_id):
         user_id = int(user_id)
         basket_id = int(basket_id)
