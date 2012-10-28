@@ -115,11 +115,14 @@ class LoginHandler(ProfileBase):
       if result:
         self.write(json.dumps(result, ensure_ascii=False))
         if not self.get_secure_cookie("user"):
-          self.set_secure_cookie("user", self.params["username"])
+          self.set_secure_cookie("user", self.params["username"], 
+                                 expires_days=debugconstants.cookie_max_days)
         if not self.get_secure_cookie("id"):
-          self.set_secure_cookie("id", str(result["user_id"]) )
+          self.set_secure_cookie("id", str(result["user_id"]),
+                                 expires_days=debugconstants.cookie_max_days)
         if not self.get_cookie("id2"):
-          self.set_cookie("id2", str(result["user_id"]) )
+          self.set_cookie("id2", str(result["user_id"]),
+                                 expires_days=debugconstants.cookie_max_days)
       else:
         self.write(utils.json.dumps({ 'error': 'unknown user' }))
     #validation error
