@@ -138,7 +138,7 @@ function renderBadgeDetails() {
         badgeDetails += '<p><strong>id: </strong>' + badge[0].badge_id + '</p>';
         badgeDetails += '<p><strong>description: </strong>' + badge[0].description + '</p>';
         badgeDetails += '<p><strong>type: </strong>' + type + '</p>';
-        badgeDetails += '<img src="http://' + badge[0].static_vhost + "/images/bubbles/" + badge[0].image_link + '" class="details-image" />';
+        badgeDetails += '<img src="http://' + badge[0].static_vhost + "/static/images/bubbles/" + badge[0].image_link + '" class="details-image" />';
         badgeDetails += '</div>';
         
         container.append(badgeDetails);

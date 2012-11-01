@@ -12,16 +12,19 @@ class ProtoHandler(tornado.web.RequestHandler):
   def initialize(self, db):
     self.db = db
 
+
 class MainHandler(ProtoHandler):
   def get(self):
     self.render("menu.html")
-    
+
+
 class ListBadgesHandler(ProtoHandler):
   def get(self):
     badges = self.db.query("select * from badges")
     static_vhost = conf['env']['static_vhost']
     self.render("badges.html", badges=badges, static_vhost=static_vhost, added_new=False, error=False)
-    
+
+
 class AddNewBadgeHandler(ProtoHandler):
   def post(self):
     static_vhost = conf['env']['static_vhost']
@@ -56,6 +59,7 @@ class AddNewBadgeHandler(ProtoHandler):
       badges = self.db.query("select * from badges")
       self.render("badges.html", badges=badges, static_vhost=static_vhost, added_new=False, error=True)
 
+
 class EditBadgeHandler(ProtoHandler):
   def get(self, bid):
     static_vhost = conf['env']['static_vhost']
@@ -69,7 +73,7 @@ class EditBadgeHandler(ProtoHandler):
       name = self.get_argument("name")
       description = self.get_argument("description")
       parent = self.get_argument("parent")
-      type = self.get_argument("type")
+      t = self.get_argument("type")
       
       if self.request.files:
         filename = self.request.files['image'][0]['filename']
@@ -81,19 +85,24 @@ class EditBadgeHandler(ProtoHandler):
         file = open(path, "w")
         file.write(self.request.files['image'][0]['body'])
         file.close()
-        
-        self.db.execute(
-            "UPDATE badges SET name=%s, image_link=%s, description=%s, parent=%s, type=%s WHERE badge_id=%s",
-            name, filename, description, parent, type, bid)
-        
-        badges = self.db.query("select * from badges")
-        self.render("badges.html", badges=badges, static_vhost=static_vhost, added_new=True, error=False)
       else:
-        raise Exception
-    except Exception:
+        r = self.db.query("SELECT image_link from badges where badge_id=%s", bid)
+        if r != [] :
+            filename = r[0]['image_link']
+
+
+      self.db.execute(
+          "UPDATE badges SET name=%s, image_link=%s, description=%s, parent=%s, type=%s WHERE badge_id=%s",
+          name, filename, description, parent, t, bid)
+
+      badges = self.db.query("select * from badges")
+      self.render("badges.html", badges=badges, static_vhost=static_vhost, added_new=True, error=False)
+
+    except Exception as e:
       badges = self.db.query("select * from badges")
       self.render("badges.html", badges=badges, static_vhost=static_vhost, added_new=False, error=True)
-      
+
+
 class GetBadgeHandler(ProtoHandler):
   def get(self, bid):
     result = self.db.query("select * from badges where badge_id=%s", bid)
@@ -101,7 +110,8 @@ class GetBadgeHandler(ProtoHandler):
     result[0]['static_vhost'] = conf['env']['static_vhost']
       
     self.write(json.dumps(result))
-      
+
+
 class DeleteBadgeHandler(ProtoHandler):
   def get(self, bid):
     static_vhost = conf['env']['static_vhost']
@@ -118,6 +128,7 @@ class DeleteBadgeHandler(ProtoHandler):
     except Exception:
       badges = self.db.query("select * from badges")
       self.render("badges.html", badges=badges, static_vhost=static_vhost, added_new=False, error=True)
+
 
 class GenerateTree(ProtoHandler):
   def genTreeRec( self, x, parent_ids, R ) :
@@ -140,12 +151,14 @@ class GenerateTree(ProtoHandler):
 
     # root node always has id=0
     self.write( json.dumps( [ self.genTreeRec(x, parent_ids, R) for x in R[0]] ) )
-    
+
+
 class ListUsersHandler(ProtoHandler):
   def get(self):
     users = self.db.query("select * from users")
     self.render("users.html", users=users, added_new=False, error=False)
-    
+
+
 class AddNewUserHandler(ProtoHandler):
   def post(self):
     try:
@@ -166,7 +179,8 @@ class AddNewUserHandler(ProtoHandler):
     except Exception:
       users = self.db.query("select * from users")
       self.render("users.html", users=users, added_new=False, error=True)
-      
+
+
 class DeleteUserHandler(ProtoHandler):
   def get(self, uid):
     try:
@@ -175,7 +189,8 @@ class DeleteUserHandler(ProtoHandler):
     except Exception:
       users = self.db.query("select * from users")
       self.render("users.html", users=users, added_new=False, error=True)
-      
+
+
 class BadgesInUsersHandler(ProtoHandler):
   def get(self):
     users = self.db.query("select * from users")
@@ -200,6 +215,10 @@ class BadgesInUsersHandler(ProtoHandler):
     badges = self.db.query("select * from badges")
     badges_in_users = self.db.query("select * from badges_users")
     self.render("badges_in_users.html", badges_in_users=badges_in_users, users=users, badges=badges, updated=True, error=False)
+
+
+
+
 
 conf = confbu.get_config()
 db = tornado.database.Connection(conf['mysql']['host'], conf['mysql']['database'], user=conf['mysql']['username'], password=conf['mysql']['password'])
@@ -228,3 +247,4 @@ if __name__ == "__main__":
   ioloop = tornado.ioloop.IOLoop().instance()
   autoreload.start(ioloop)
   ioloop.start()
+

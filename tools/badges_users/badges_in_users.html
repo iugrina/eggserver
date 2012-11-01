@@ -67,7 +67,7 @@
             <tbody>
               {% for user in users %}
                 <tr>
-                  <td>{{ user.email }}</td>
+                  <td>{{ user.username }}</td>
                   <td>
                     <select class="badges-select" name="badges_in_users-{{ user.user_id }}" multiple="multiple">
                       {% for badge in badges %}

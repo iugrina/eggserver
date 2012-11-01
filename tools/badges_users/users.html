@@ -72,7 +72,7 @@
             </div>
           </div>
           <div class="control-group">
-            <label class="control-label" for="email">Last Name</label>
+            <label class="control-label" for="email">email (username)</label>
             <div class="controls">
               <input name="email" type="text" class="input-xlarge" id="email">
             </div>
@@ -93,7 +93,11 @@
               <th>userID</th>
               <th>first name</th>
               <th>last name</th>
-              <th>email</th>
+              <th>nickname</th>
+              <th>email (username)</th>
+              <th>dob</th>
+              <th>created</th>
+              <th>active</th>
               <th class="delete-user-row"></th>
             </tr>
           </thead>
@@ -103,7 +107,11 @@
                 <td>{{ user.user_id }}</td>
                 <td>{{ user.first_name }}</td>
                 <td>{{ user.last_name }}</td>
-                <td>{{ user.email }}</td>
+                <td>{{ user.nickname }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.dob }}</td>
+                <td>{{ user.created }}</td>
+                <td>{{ user.active }}</td>
                 <td><a class="btn btn-danger btn-delete-user hide" title="Delete user" id="bid-{{ user.user_id }}"><i class="icon-trash icon-white"></i></a></td>
               </tr>
             {% end %}
