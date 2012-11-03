@@ -12,7 +12,5 @@ class Recommended(Document):
         } ]
     }
 
-
     required_fields = [ 'user_id' ]
     use_schemaless = True
-
