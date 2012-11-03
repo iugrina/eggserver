@@ -14,14 +14,11 @@ class Recommended:
 
     def get_recommended(self, user_id):
         try:
-            bp = self.db.Recommended.find_one({'user_id' : user_id})
+            bp = self.db.Recommended.find({'user_id' : user_id})[0]
+            if not bp :
+                raise eggErrors.UnknownUserIDException
+            return bp['recommended']
         except Exception as e:
-            self.log(e)
+            pass
+            #self.log(e)
             raise egg_errors.QueryNotPossible
-
-        if not bp :
-            raise eggErrors.UnknownUserIDException
-
-        return bp['recommended']
-
-
