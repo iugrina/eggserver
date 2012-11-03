@@ -1,4 +1,4 @@
-from common import egg_errors as eggErrors
+from common import egg_errors
 
 class Recommended:
     """Recommended class does mangling with MongoDB
