@@ -29,6 +29,9 @@ class GetFriendsHandler(FriendsHandler):
     @decorators.authenticated
     def get(self, user_id):
         user_id = int(user_id)
+
+        # everyone can see user's friends
+
         try:
             fs = self.friends.get_friends(user_id)
             self.write( json.dumps( fs ) )
@@ -41,6 +44,14 @@ class AddDeleteFriendHandler(FriendsHandler):
     def post(self, user_id, friend_id):
         user_id = int(user_id)
         friend_id = int(friend_id)
+
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see change it's friends
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
+
         try:
             self.friends.add_friend(user_id, friend_id)
         except egg_errors.BaseException as e :
@@ -50,6 +61,14 @@ class AddDeleteFriendHandler(FriendsHandler):
     def delete(self, user_id, friend_id):
         user_id = int(user_id)
         friend_id = int(friend_id)
+
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see change it's friends
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
+
         try:
             self.friends.delete_friend(user_id, friend_id)
         except egg_errors.BaseException as e :
@@ -59,6 +78,14 @@ class AddDeleteFriendHandler(FriendsHandler):
 class ApproveFriendHandler(FriendsHandler):
     @decorators.authenticated
     def post(self, user_id, friend_id): 
+
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see change it's friends
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
+
         try:
             self.friends.approve_friend(user_id, friend_id)
         except egg_errors.BaseException as e :

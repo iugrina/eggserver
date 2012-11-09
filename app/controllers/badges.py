@@ -56,8 +56,17 @@ class GetBadgesForUserHandler(BadgesUsersHandler):
     @decorators.authenticated
     def get(self, user_id ):
         user_id = int(user_id)
+
+        # check privileges
+        if debugconstants.eggPrivileges :
+            # only user can see all of his badges
+            if int(self.current_user) == user_id :
+                getbadges = lambda x : self.bu.get_user_badges(x)
+            else:
+                getbadges = lambda x : self.bu.get_user_badges_by_visibility(user_id, visibility=0)
+
         try:
-            r = self.bu.get_user_badges(user_id)
+            r = getbadges(user_id)
             self.write( json.dumps( r, ensure_ascii=False ) )
         except egg_errors.BaseException as e :
             self.write( e.get_json() )
@@ -67,6 +76,14 @@ class AddChangeDeleteBadgesForUserHandler(BadgesUsersHandler):
     def post(self, user_id, friend_id):
         user_id = int(user_id)
         friend_id = int(friend_id)
+
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can change it's badges
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
+
         try:
             body = tornado.escape.json_decode( self.request.body )
             # mora dobiti i nekakav description i visibility
@@ -82,6 +99,14 @@ class AddChangeDeleteBadgesForUserHandler(BadgesUsersHandler):
     def delete(self, user_id, friend_id):
         user_id = int(user_id)
         friend_id = int(friend_id)
+
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can change it's badges
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
+
         try:
             self.bu.delete_user_badge(user_id, friend_id)
         except egg_errors.BaseException as e :

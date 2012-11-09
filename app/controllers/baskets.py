@@ -29,6 +29,14 @@ class GetChangeOrderBasketsHandler(BasketHandler):
     @decorators.authenticated
     def get(self, user_id):
         user_id = int(user_id)
+
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see/change it's baskets
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
+
         try:
             baskets = self.dbp.get_baskets(user_id)
             self.write( json.dumps( baskets ) )
@@ -38,6 +46,14 @@ class GetChangeOrderBasketsHandler(BasketHandler):
     @decorators.authenticated
     def post(self, user_id):
         user_id = int(user_id)
+
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see/change it's baskets
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
+
         try:
             new_order = tornado.escape.json_decode( self.request.body )
             try:
@@ -52,12 +68,19 @@ class GetChangeOrderBasketsHandler(BasketHandler):
 class AddBasketHandler(BasketHandler):
     @decorators.authenticated
     def post(self, user_id): 
+        user_id = int(user_id)
+
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see/change it's baskets
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
+
         basket_name = self.get_argument("basket_name")
 
         if not basket_name :
             self.write("sranje")
-
-        user_id = int(user_id)
 
         try:
             self.dbp.add_basket(user_id, basket_name)
@@ -70,6 +93,14 @@ class GetDelChangeOrderBasketHandler(BasketHandler):
     def get(self, user_id, basket_id):
         user_id = int(user_id)
         basket_id = int(basket_id)
+
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see/change it's baskets
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
+
         try:
             basket = self.dbp.get_basket(user_id, basket_id)
             self.write( json.dumps( basket ) )
@@ -80,6 +111,14 @@ class GetDelChangeOrderBasketHandler(BasketHandler):
     def delete(self, user_id, basket_id):
         user_id = int(user_id)
         basket_id = int(basket_id)
+
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see/change it's baskets
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
+
         try:
             basket = self.dbp.delete_basket(user_id, basket_id)
         except egg_errors.BaseException as e :
@@ -89,6 +128,14 @@ class GetDelChangeOrderBasketHandler(BasketHandler):
     def post(self, user_id, basket_id):
         user_id = int(user_id)
         basket_id = int(basket_id)
+
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see/change it's baskets
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
+
         try:
             new_order = tornado.escape.json_decode( self.request.body )
             try:
@@ -106,6 +153,14 @@ class AddDelUserFromBasketHandler(BasketHandler):
         user_id = int(user_id)
         basket_id = int(basket_id)
         add_user_id = int(add_user_id)
+
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see/change it's baskets
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
+
         try:
             basket = self.dbp.add_user_to_basket(user_id, basket_id, add_user_id)
         except egg_errors.BaseException as e :
@@ -116,6 +171,14 @@ class AddDelUserFromBasketHandler(BasketHandler):
         user_id = int(user_id)
         basket_id = int(basket_id)
         del_user_id = int(add_user_id)
+
+        if debugconstants.eggPrivileges :
+            # check privileges
+            # only user can see/change it's baskets
+            if int(self.current_user) != user_id :
+                self.write( egg_errors.PrivilegeException().get_json() )
+                return
+
         try:
             basket = self.dbp.delete_user_from_basket(user_id, basket_id, del_user_id)
         except egg_errors.BaseException as e :

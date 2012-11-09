@@ -31,6 +31,9 @@ class GetAllProfileImagesHandler(ProfileImagesHandler):
     @decorators.authenticated
     def get(self, user_id):
         user_id = int(user_id)
+
+        # everyone can see user's photos
+
         try:
             r = self.pi.get_user_images(user_id)
             for x in r:
@@ -43,6 +46,9 @@ class GetProfileImagesByTypeHandler(ProfileImagesHandler):
     @decorators.authenticated
     def get(self, user_id):
         user_id = int(user_id)
+
+        # everyone can see user's photos
+
         try:
             # profile i friend slike su iste samo razlicite velicine
             # te se nalaze u razlicitim direktorijima
