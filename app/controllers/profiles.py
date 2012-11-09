@@ -17,132 +17,136 @@ from models.profiles.profile import Profile, ProfileData
 
 
 class ProfileBase(tornado.web.RequestHandler):
-  def initialize(self, db):
-    self.db = db
-    self.profile = Profile(self.db)
-    
-    self.params = {}
-    for param in self.request.arguments:
-      self.params[param] = self.request.arguments[param][0]
+    def initialize(self, db):
+        self.db = db
+        self.profile = Profile(self.db)
 
-    # cem' ovo ???
-    return self.params
-  
-  def set_default_headers(self):
-    conf = confegg.get_config()
-    self.set_header('Access-Control-Allow-Origin', conf['client_url'])
-    self.set_header('Access-Control-Allow-Credentials', 'true')
+        self.params = {}
+        for param in self.request.arguments:
+            self.params[param] = self.request.arguments[param][0]
 
-  def get_current_user(self):
-    return self.get_secure_cookie("id")
+        # cem' ovo ???
+        return self.params
+
+    def set_default_headers(self):
+        conf = confegg.get_config()
+        self.set_header('Access-Control-Allow-Origin', conf['client_url'])
+        self.set_header('Access-Control-Allow-Credentials', 'true')
+
+    def get_current_user(self):
+        return self.get_secure_cookie("id")
 
 
 class ProfilesHandler(ProfileBase):
-  """
-  API endpoint: /profile/
-  """
-  
-  def get(self):
-    pass
+    """
+    API endpoint: /profile/
+    """
 
-  def post(self):
-    "Creates a new profile"
-    try:
-      self.profile.add_user(self.params)
-    #validation error
-    except val.InvalidList as e:
-      self.write(utils.json.dumps(str(e)))
-    #query error
-    except egg_errors.QueryNotPossible as e:
-      self.write(e.get_json())
-      
-      
+    def get(self):
+        pass
+
+    def post(self):
+        "Creates a new profile"
+        try:
+            self.profile.add_user(self.params)
+        #validation error
+        except val.InvalidList as e:
+            self.write(utils.json.dumps(str(e)))
+        #query error
+        except egg_errors.QueryNotPossible as e:
+            self.write(e.get_json())
+
+
 class ProfileHandler(ProfileBase):
-  """Handles single profile interaction
-  API endpoint: /profile/:id"""
+    """Handles single profile interaction
+    API endpoint: /profile/:id"""
 
-  def initialize(self, db, profiledata):
-    super(ProfileHandler, self).initialize(db)
-    self.profiledata = profiledata
+    def initialize(self, db, profiledata):
+        super(ProfileHandler, self).initialize(db)
+        self.profiledata = profiledata
 
-  @decorators.authenticated
-  def get(self, user_id):
-    "Retrieves profile with user_id"
-    try:
-      result = self.profiledata.get_user_info(int(user_id))
-      self.write( json.dumps(result, ensure_ascii=False) )
-    except egg_errors.BaseException as e :
-      self.write( e.get_json() )
-      
-  @decorators.authenticated
-  def delete(self, user_id):
-    "Removed profile with user_id"
-    try:
-      self.profile.delete_user(int(user_id))
-    #validation error
-    except val.InvalidList as e:
-      self.write(utils.json.dumps(str(e)))
-    #query error
-    except egg_errors.QueryNotPossible as e:
-      self.write(e.get_json())
-      
-  def put(self, user_id):
-    "Updates profile information"
-    self.profile.update_user(user_id, self.params)
-    
-    
+    @decorators.authenticated
+    def get(self, user_id):
+        "Retrieves profile with user_id"
+        user_id = int(user_id)
+
+        try:
+            result = self.profiledata.get_user_info(user_id)
+            self.write( json.dumps(result, ensure_ascii=False) )
+        except egg_errors.BaseException as e :
+            self.write( e.get_json() )
+
+    @decorators.authenticated
+    def delete(self, user_id):
+        "Removed profile with user_id"
+        try:
+            self.profile.delete_user(int(user_id))
+        #validation error
+        except val.InvalidList as e:
+            self.write(utils.json.dumps(str(e)))
+        #query error
+        except egg_errors.QueryNotPossible as e:
+            self.write(e.get_json())
+
+    def put(self, user_id):
+        "Updates profile information"
+        self.profile.update_user(user_id, self.params)
+
+
 class LoginHandler(ProfileBase):
-  """Handles single profile interaction
-  API endpoint: /profile/login/"""
-  
-  def get(self):
-    "Not currently defined (used for filtering)"
-    pass
+    """Handles single profile interaction
+    API endpoint: /profile/login/"""
 
-  def post(self):
-    "Request user profile authorization"
-    try:
-      result = self.profile.login(self.params)
-      if result:
-        self.write(json.dumps(result, ensure_ascii=False))
-        if not self.get_secure_cookie("user"):
-          self.set_secure_cookie("user", self.params["username"], 
-                                 expires_days=debugconstants.cookie_max_days)
-        if not self.get_secure_cookie("id"):
-          self.set_secure_cookie("id", str(result["user_id"]),
-                                 expires_days=debugconstants.cookie_max_days)
-        if not self.get_cookie("id2"):
-          self.set_cookie("id2", str(result["user_id"]),
-                                 expires_days=debugconstants.cookie_max_days)
-      else:
-        self.write(utils.json.dumps({ 'error': 'unknown user' }))
-    #validation error
-    except val.InvalidList as e:
-      self.write(utils.json.dumps(str(e)))
-    #query error
-    except egg_errors.QueryNotPossible as e:
-      self.write(e.get_json())
-    except KeyError as e:
-      self.write(utils.json.dumps({ 'error': 'no data' }))
-      
+    def get(self):
+        "Not currently defined (used for filtering)"
+        pass
+
+    def post(self):
+        "Request user profile authorization"
+        try:
+            result = self.profile.login(self.params)
+            if result:
+                self.write(json.dumps(result, ensure_ascii=False))
+                if not self.get_secure_cookie("user"):
+                    self.set_secure_cookie("user", self.params["username"], 
+                                           expires_days=debugconstants.cookie_max_days)
+                if not self.get_secure_cookie("id"):
+                    self.set_secure_cookie("id", str(result["user_id"]),
+                                           expires_days=debugconstants.cookie_max_days)
+                if not self.get_cookie("id2"):
+                    self.set_cookie("id2", str(result["user_id"]),
+                                    expires_days=debugconstants.cookie_max_days)
+            else:
+                self.write(utils.json.dumps({ 'error': 'unknown user' }))
+        #validation error
+        except val.InvalidList as e:
+            self.write(utils.json.dumps(str(e)))
+        #query error
+        except egg_errors.QueryNotPossible as e:
+            self.write(e.get_json())
+        except KeyError as e:
+            self.write(utils.json.dumps({ 'error': 'no data' }))
+
+
 class SignupHandler(ProfileBase):
-  """API endpoint: /profile/signup/"""
-  
-  def get(self):
-    "Not currently defined (used for filtering)"
-    pass
+    """API endpoint: /profile/signup/"""
 
-  def post(self):
-    "Create user and set cookie"
-    try:
-      self.profile.signup(self.params)
-      self.set_secure_cookie("user", self.params["email"])
-    #validation error
-    except val.InvalidList as e:
-      self.write(utils.json.dumps(str(e)))
-    #query error
-    except egg_errors.QueryNotPossible as e:
-      self.write(e.get_json())
+    def get(self):
+        "Not currently defined (used for filtering)"
+        pass
+
+    def post(self):
+        "Create user and set cookie"
+        try:
+            self.profile.signup(self.params)
+            self.set_secure_cookie("user", self.params["email"])
+        #validation error
+        except val.InvalidList as e:
+            self.write(utils.json.dumps(str(e)))
+        #query error
+        except egg_errors.QueryNotPossible as e:
+            self.write(e.get_json())
+
 
 if __name__ == "__main__":
     conf = confegg.get_config()
