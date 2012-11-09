@@ -18,7 +18,7 @@ class Friends( ExceptionLogger ):
 	        result = self.table.select(
 	            self.table.c.user_id == user_id ).execute()
 	        if result.rowcount >= 1:
-	            return [x.values() for x in result]
+	            return [dict(x) for x in result]
 	        elif result.rowcount == 0:
 	            return []
         except Exception as e:
