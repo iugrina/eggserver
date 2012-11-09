@@ -27,7 +27,7 @@ class BadgesUsers( ExceptionLogger ):
             raise egg_errors.QueryNotPossible
 
     def get_user_badges_by_visibility(self, user_id, visibility):
-        """Returns only those badges that comply to give visibility
+        """Returns only those badges that comply to given visibility
         for given user with user_id"""
         try:
             result = self.table.select(and_(
