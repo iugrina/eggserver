@@ -16,7 +16,7 @@ class Recommended:
         try:
             bp = self.db.Recommended.find({'user_id' : user_id})[0]
             if not bp :
-                raise eggErrors.UnknownUserIDException
+                raise egg_errors.UnknownUserIDException
             return bp['recommended']
         except Exception as e:
             pass
