@@ -1,6 +1,8 @@
 import json
-from decimal import Decimal
 import datetime
+from decimal import Decimal
+
+from common import debugconstants
 
 def parseRow(obj):
   if isinstance(obj, Decimal):
@@ -34,12 +36,15 @@ class ExceptionLogger():
     def __init__(self, logging_file_pointer=None) :
         self.lf = logging_file_pointer
 
-    def log(self, e):
+    def log(self,  e, identifier=None):
+        if not debugconstants.eggLogExceptions :
+            return
+
         if self.lf :
-            self.lf.write(str(datetime.datetime.utcnow()) + " :: " + str(e) + "\n")
+            self.lf.write( identifier + ">>" + str(datetime.datetime.utcnow()) + " :: " + str(e) + "\n")
             self.lf.flush()
         else:
-            print str(datetime.datetime.utcnow()) + " :: " + str(e)
+            print  identifier + ">>" +str(datetime.datetime.utcnow()) + " :: " + str(e)
 
 def str2unicode(s, charset='utf-8'):
     """Converts str object to unicode object
