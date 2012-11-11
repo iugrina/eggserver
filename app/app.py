@@ -49,15 +49,16 @@ class Application(tornado.web.Application):
 
     images_path = conf['env']['static_url_path'] + conf['images']['images_root']
 
+    logging_file = open(conf['log']['static_path']+conf['log']['master'], "wa")
+
     #
     # badges
     #
-    fbadges = open(conf['log']['static_path']+conf['log']['badges'], "wa")
 
     badges_path = images_path + conf['images']['badges']
 
-    badgesusers = BadgesUsers(db, fbadges)
-    badges = Badges(db, logging_file=fbadges, images_path=badges_path)
+    badgesusers = BadgesUsers(db, logging_file)
+    badges = Badges(db, logging_file=logging_file, images_path=badges_path)
 
     # koristit cemo vec gotovu listu i dict jer ce se bedzevi
     # uredjivati sa zasebnim alatom u "maintenance mode"-u
@@ -89,9 +90,7 @@ class Application(tornado.web.Application):
     #
     # blacklist
     #
-    fblacklist = open(conf['log']['static_path']+conf['log']['blacklist'], "wa")
-
-    blacklist2db = Blacklist(db, fblacklist)
+    blacklist2db = Blacklist(db, logging_file)
     # radi brzine radimo s dict-om !!!
     blacklist2dic = blacklist2db.get_all_blacklisted_as_dict()
 
@@ -103,8 +102,7 @@ class Application(tornado.web.Application):
     #
     # friends
     #
-    ffriends = open(conf['log']['static_path']+conf['log']['friends'], "wa")
-    friends = Friends(db, ffriends)
+    friends = Friends(db, logging_file)
 
     handlers.extend([
         (r"/profile/([0-9]+)/friends", controllers.friends.GetFriendsHandler, dict(friends=friends)),
@@ -115,9 +113,7 @@ class Application(tornado.web.Application):
     #
     # images
     #
-    fimages = open(conf['log']['static_path']+conf['log']['images'], "wa")
-
-    profileimages = ProfileImages(db, fimages)
+    profileimages = ProfileImages(db, logging_file)
 
     handlers.extend( [
         (r"/profile/([0-9]+)/photos", controllers.images.GetAllProfileImagesHandler, dict(profileimages=profileimages, images_path=images_path)),
@@ -130,8 +126,7 @@ class Application(tornado.web.Application):
     # 
     # profiles
     #
-    fprofile = open(conf['log']['static_path']+conf['log']['profiles'], "wa")
-    profiledata = ProfileData( db, fprofile )
+    profiledata = ProfileData( db, logging_file )
 
     handlers.extend([
         (r"/profile/", controllers.profiles.ProfilesHandler, dict(db=db)),

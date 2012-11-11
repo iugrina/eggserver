@@ -11,6 +11,7 @@ class Friends( ExceptionLogger ):
         self.mysql_tables = MySQLTables(db)
         self.table = self.mysql_tables.friends
         self.lf = logging_file
+        self.identifier = "Friends class"
 
     def get_friends(self, user_id):
         "Returns friends for user with user_id"
@@ -22,7 +23,7 @@ class Friends( ExceptionLogger ):
 	        elif result.rowcount == 0:
 	            return []
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
     def add_friend(self, user_id, friend_id):
@@ -31,7 +32,7 @@ class Friends( ExceptionLogger ):
         try: 
             self.table.insert().values( user_id=user_id, friend_id=friend_id, approved=0 ).execute()
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
     def delete_friend(self, user_id, friend_id):
@@ -40,7 +41,7 @@ class Friends( ExceptionLogger ):
             self.table.delete().where(and_(self.table.c.user_id == user_id,
                 self.table.c.friend_id == friend_id)).execute()
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
     def approve_friend(self, user_id, friend_id):
@@ -49,7 +50,7 @@ class Friends( ExceptionLogger ):
             self.table.update().where(and_(self.table.c.user_id == user_id,
                 self.table.c.friend_id == friend_id)).values(approved=1).execute()
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
 

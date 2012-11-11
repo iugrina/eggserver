@@ -14,6 +14,8 @@ class ProfileImages( ExceptionLogger ):
         # superclass 
         self.lf = logging_file
 
+        self.identifier = "ProfileImages class"
+
     def get_user_images(self, user_id):
         "Returns all images for given user"
         try:
@@ -27,7 +29,7 @@ class ProfileImages( ExceptionLogger ):
             elif result.rowcount == 0:
                 return []
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
     def get_user_images_by_type(self, user_id, t):
@@ -45,7 +47,7 @@ class ProfileImages( ExceptionLogger ):
             elif result.rowcount == 0:
                 return []
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
     def get_image_path(self, pi, forced_type=None):

@@ -11,6 +11,7 @@ class Blacklist:
         self.mysql_tables = MySQLTables(db)
         self.table = self.mysql_tables.blacklist
         self.lf = logging_file
+        self.identifier = "BadgesUsers class"
 
     def log(self, e):
         if self.lf :
@@ -26,7 +27,7 @@ class Blacklist:
             elif result.rowcount == 0:
                 return []
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
     def get_all_blacklisted_as_dict(self):
@@ -47,7 +48,7 @@ class Blacklist:
             elif result.rowcount == 0:
                 return []
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
     def add_to_blacklist(self, user_id, blacklist_user_id):
@@ -61,13 +62,13 @@ class Blacklist:
                 # duplicate entry, don't care !
                 pass
             elif e.orig.args[0] == 1452 :
-                self.log(e)
+                self.log(e, self.identifier)
                 raise egg_errors.UnknownUserOrBadgeIDException
             else:
-                self.log(e)
+                self.log(e, self.identifier)
                 raise egg_errors.QueryNotPossible
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
 
@@ -79,7 +80,7 @@ class Blacklist:
                 self.table.c.user_id == user_id,
                 self.table.c.blacklisted_id == blacklist_user_id )).execute() 
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
     def is_blacklisted(self, user_id, blacklist_user_id):
@@ -94,6 +95,6 @@ class Blacklist:
             elif result.rowcount == 0:
                 return False
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 

@@ -1,9 +1,9 @@
 import sqlalchemy
 from sqlalchemy import and_
-from common.mysqlTables import MySQLTables
+
 from common import egg_errors
+from common.mysqlTables import MySQLTables
 from common.utils import ExceptionLogger, str2unicode
-#import schema as badges_users_schema
 
 
 class BadgesUsers( ExceptionLogger ):
@@ -12,6 +12,7 @@ class BadgesUsers( ExceptionLogger ):
         self.mysql_tables = MySQLTables(db)
         self.table = self.mysql_tables.badges_users
         self.lf = logging_file
+        self.identifier = "BadgesUsers class"
 
     def get_user_badges(self, user_id):
         "Returns badges for given user with user_id"
@@ -23,7 +24,7 @@ class BadgesUsers( ExceptionLogger ):
             elif result.rowcount == 0:
                 return []
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
     def get_user_badges_by_visibility(self, user_id, visibility):
@@ -38,7 +39,7 @@ class BadgesUsers( ExceptionLogger ):
             elif result.rowcount == 0:
                 return []
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
     def addchange_user_badge(self, user_id, badge_id, desc=None, visibility=0):
@@ -56,16 +57,16 @@ class BadgesUsers( ExceptionLogger ):
                             badge_id=badge_id, user_id=user_id,
                             description=desc, visibility=visibility).execute()
                 except Exception as e:
-                    self.log(e)
+                    self.log(e, self.identifier)
                     raise egg_errors.QueryNotPossible
             elif e.orig.args[0] == 1452 :
-                self.log(e)
+                self.log(e, self.identifier)
                 raise egg_errors.UnknownUserOrBadgeIDException
             else:
-                self.log(e)
+                self.log(e, self.identifier)
                 raise egg_errors.QueryNotPossible
         except:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
 
@@ -76,7 +77,7 @@ class BadgesUsers( ExceptionLogger ):
                 self.table.c.user_id == user_id,
                 self.table.c.badge_id == badge_id )).execute() 
         except:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
 
@@ -87,12 +88,13 @@ class Badges( ExceptionLogger ):
         self.table = self.mysql_tables.badges
         self.lf = logging_file
         self.images_path = images_path
+        self.identifier = "Badges class"
 
     def get_badges(self):
         try:
             badges = self.table.select().execute()
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
         if badges.rowcount == 0 :
@@ -120,7 +122,7 @@ class Badges( ExceptionLogger ):
         try:
             badges = self.table.select().execute()
         except Exception as e:
-            self.log(e)
+            self.log(e, self.identifier)
             raise egg_errors.QueryNotPossible
 
         if badges.rowcount == 0 :
