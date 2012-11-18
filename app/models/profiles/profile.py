@@ -91,8 +91,11 @@ class ProfileData():
 
         # get profile_image/friend_image, badges, friends
         friends = self.f.get_friends(user_id)
-        profile_image = self.i.get_image_path( self.i.get_user_images_by_type(user_id, 'profile')[0] )
-        profile_image = self.images_path + profile_image
+        if self.i.get_user_images_by_type(user_id, 'profile'):
+            profile_image = self.i.get_image_path(self.i.get_user_images_by_type(user_id, 'profile')[0])
+            profile_image = self.images_path + profile_image
+        else:
+            profile_image = ""
         badges = self.bu.get_user_badges(user_id)
 
         # ovo bi trebalo prilagoditi kad napravimo kod za activity/online/eggs status
