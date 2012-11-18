@@ -22,8 +22,10 @@ import controllers.friends
 import controllers.images
 import controllers.profiles
 import controllers.recommended
+import controllers.status
 
 import models
+import models.status.status
 import models.baskets.dbproxy as dbproxy
 from models.baskets.mongodb_model import Basket
 from models.badges.badges import BadgesUsers, Badges
@@ -32,6 +34,7 @@ from models.friends.friends import Friends
 from models.images.images import ProfileImages
 from models.profiles.profile import Profile, ProfileData
 from models.recommended.mongodb_model import Recommended
+from models.status.mongodb_model import StatusModel
 
 
 
@@ -44,6 +47,8 @@ class Application(tornado.web.Application):
                                        conf['mysql']['database'])
     db.metadata  = sqlalchemy.MetaData(bind=db)
     #db.echo = "debug"
+
+    conMongo = mongokit.Connection(conf['mongo']['host'], conf['mongo']['port'])
 
     handlers = []
 
@@ -75,10 +80,8 @@ class Application(tornado.web.Application):
     #
     # baskets
     #
-    conBas = mongokit.Connection(conf['mongo']['host'], conf['mongo']['port'])
-    conBas.register([Basket])
-
-    baskets_dbp = dbproxy.DbProxy( conBas, None)
+    conMongo.register([Basket])
+    baskets_dbp = dbproxy.DbProxy( conMongo, None)
 
     handlers.extend([
         (r"/profile/([0-9]+)/baskets", controllers.baskets.GetChangeOrderBasketsHandler, dict(dbp=baskets_dbp)),
@@ -138,10 +141,8 @@ class Application(tornado.web.Application):
     #
     # recommended
     #
-    conRec = mongokit.Connection(conf['mongo']['host'], conf['mongo']['port'])
-    conRec.register([Recommended])
-
-    recommended_dbp = models.recommended.recommended.Recommended( conRec)
+    conMongo.register([Recommended])
+    recommended_dbp = models.recommended.recommended.Recommended( conMongo)
 
     handlers.extend( [
         (r"/profile/([0-9]+)/recommended", controllers.recommended.GetRecommendedHandler, dict(dbp=recommended_dbp)),
@@ -155,6 +156,19 @@ class Application(tornado.web.Application):
       (r"/event/([0-9]+)", controllers.events.EventHandler, dict(db=db)),
       (r"/event/([0-9]+)/user/([0-9]+)", controllers.events.EventUserHandler, dict(db=db)),
     ] )
+
+    #
+    #
+    #
+    conMongo.register([StatusModel])
+    status_dbp = models.status.status.Status(conMongo)
+
+    handlers.extend([
+        (r"/profile/([0-9]+)/status/all", controllers.status.GetStatusesHandler, dict(dbp=status_dbp)),
+        (r"/profile/([0-9]+)/status/last", controllers.status.GetLastStatusHandler, dict(dbp=status_dbp)),
+        (r"/profile/([0-9]+)/status/add", controllers.status.AddStatusHandler, dict(dbp=status_dbp)),
+        (r"/profile/([0-9]+)/status/([0-9]+)/delete", controllers.status.DeleteStatusHandler, dict(dbp=status_dbp)),
+        ])
 
 
 

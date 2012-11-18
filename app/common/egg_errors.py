@@ -152,3 +152,21 @@ class UnknownUserOrBadgeIDException(BaseException):
         self.error_message = u"Uknown User ID or Badge ID"
 
 
+#
+# Status mangling exceptions 10400-10599
+#
+
+
+class LastStatusDeleteException(BaseException):
+    def __init__(self):
+        BaseException.__init__(self)
+        self.error_code = 10400
+        self.error_message = u"Trying to delete last status"
+
+
+class UnknownStatusIDException(BaseException):
+    def __init__(self):
+        BaseException.__init__(self)
+        self.error_code = 10401
+        self.error_message = u"Unknown Status ID"
+
