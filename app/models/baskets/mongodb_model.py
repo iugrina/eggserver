@@ -1,4 +1,5 @@
 from mongokit import Document
+
 import confegg
 
 class Basket(Document):

@@ -1,8 +1,10 @@
 from mongokit import Document
 import datetime
 
+import confegg
+
 class StatusModel(Document):
-    __database__ = "eggdb"
+    __database__ = confegg.get_config()['mongo']['database']
     __collection__ = "status"
     
     structure = {
