@@ -55,7 +55,6 @@ class GetLastStatusHandler(StatusHandler):
 
         try:
             s = self.dbp.get_last_status(user_id)
-            print s
             s['datetime'] = unicode(s['datetime'])
             self.write( json.dumps( s, ensure_ascii=False ) )
         except egg_errors.BaseException as e :
