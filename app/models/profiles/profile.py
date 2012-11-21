@@ -8,9 +8,11 @@ from common import egg_errors
 from common import utils
 import schema as profile_schema
 
+import models.status.status
 from models.images.images import ProfileImages
 from models.friends.friends import Friends
 from models.badges.badges import BadgesUsers
+from models.status.status import Status
 
 class Profile:
   def __init__(self, db):
@@ -74,12 +76,13 @@ class Profile:
 
 
 class ProfileData():
-    def __init__(self, db, f=None):
-        self.db = db
+    def __init__(self, mysqldb, mongodb, f=None):
+        self.db = mysqldb
         self.p = Profile(self.db)
         self.i = ProfileImages(self.db, f)
         self.f = Friends(self.db, f)
         self.bu = BadgesUsers(self.db, f)
+        self.s = Status(mongodb)
 
         conf = confegg.get_config()
         self.images_path = conf['env']['static_url_path'] + conf['images']['images_root']
@@ -103,8 +106,10 @@ class ProfileData():
         online = True
         eggs = 0
 
-        #ovo bi trebalo prilagoditi kad napravimo kod za speech bubble
-        speech_bubble = "evo " +  basic_user_info['first_name'] + " nesto prica"
+
+        speech_bubble = self.s.get_last_status(user_id)
+        speech_bubble["datetime"] = unicode(speech_bubble["datetime"])
+        speech_bubble["last_status"] = utils.str2unicode(speech_bubble["last_status"])
 
         r = { "user_id": basic_user_info['user_id'],
               "first_name": utils.str2unicode(basic_user_info['first_name']),
@@ -112,7 +117,7 @@ class ProfileData():
               "nickname": utils.str2unicode(basic_user_info['nickname']),
               "activity": activity,
               "online": online,
-              "status": utils.str2unicode(speech_bubble),
+              "status": speech_bubble,
               "profile_image": profile_image,
               "friends": friends,
               "eggs": eggs,

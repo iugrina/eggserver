@@ -126,18 +126,6 @@ class Application(tornado.web.Application):
         (r""+images_path+"/(.*)", tornado.web.StaticFileHandler, {"path": conf['env']['static_path']+conf['images']['images_root']}),
     ] )
 
-    # 
-    # profiles
-    #
-    profiledata = ProfileData( db, logging_file )
-
-    handlers.extend([
-        (r"/profile/", controllers.profiles.ProfilesHandler, dict(db=db)),
-        (r"/profile/([0-9]+)", controllers.profiles.ProfileHandler, dict(db=db, profiledata=profiledata)),
-        (r"/profile/login/", controllers.profiles.LoginHandler, dict(db=db)),
-        (r"/profile/signup/", controllers.profiles.SignupHandler, dict(db=db))
-        ])
-
     #
     # recommended
     #
@@ -170,6 +158,18 @@ class Application(tornado.web.Application):
         (r"/profile/([0-9]+)/status/([0-9]+)/delete", controllers.status.DeleteStatusHandler, dict(dbp=status_dbp)),
         ])
 
+
+    # 
+    # profiles
+    #
+    profiledata = ProfileData( db, conMongo, logging_file )
+
+    handlers.extend([
+        (r"/profile/", controllers.profiles.ProfilesHandler, dict(db=db)),
+        (r"/profile/([0-9]+)", controllers.profiles.ProfileHandler, dict(db=db, profiledata=profiledata)),
+        (r"/profile/login/", controllers.profiles.LoginHandler, dict(db=db)),
+        (r"/profile/signup/", controllers.profiles.SignupHandler, dict(db=db))
+        ])
 
 
     settings = dict(

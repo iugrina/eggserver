@@ -4,6 +4,7 @@ import tornado.web
 # other python
 import json
 import sqlalchemy
+import mongokit
 from lib.voluptuous import voluptuous as val
 
 # egg
@@ -14,6 +15,7 @@ import controllers
 import controllers.profiles
 
 from models.profiles.profile import Profile, ProfileData
+from models.status.mongodb_model import StatusModel
 
 
 class ProfileBase(tornado.web.RequestHandler):
@@ -156,13 +158,16 @@ if __name__ == "__main__":
     db.metadata  = sqlalchemy.MetaData(bind=db)
     #db.echo = "debug"
 
+    conMongo = mongokit.Connection(conf['mongo']['host'], conf['mongo']['port'])
+    conMongo.register([StatusModel])
+
+    f = open(conf['log']['static_path']+conf['log']['master'], "wa")
+    profiledata = ProfileData( db, conMongo, f )
+
     settings = dict(
       debug=debugconstants.debug,
       cookie_secret=debugconstants.cookie_secret,
     )
-
-    f = open(conf['log']['static_path']+conf['log']['profiles'], "wa")
-    profiledata = ProfileData( db, f )
 
     app = tornado.web.Application([
       (r"/profile/", controllers.profiles.ProfilesHandler, dict(db=db)),
@@ -170,7 +175,6 @@ if __name__ == "__main__":
       (r"/profile/login/", controllers.profiles.LoginHandler, dict(db=db)),
       (r"/profile/signup/", controllers.profiles.SignupHandler, dict(db=db)),
     ], **settings)
-
 
     app.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
