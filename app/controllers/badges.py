@@ -64,6 +64,9 @@ class GetBadgesForUserHandler(BadgesUsersHandler):
                 getbadges = lambda x : self.bu.get_user_badges(x)
             else:
                 getbadges = lambda x : self.bu.get_user_badges_by_visibility(user_id, visibility=0)
+        # if we do not care about user priviledges (DEBUG MODE)
+        else:
+          getbadges = lambda x : self.bu.get_user_badges(x)
 
         try:
             r = getbadges(user_id)
