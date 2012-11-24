@@ -21,6 +21,10 @@ class BadgesHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("id")
 
+    def set_default_headers(self):
+        conf = confegg.get_config()
+        self.set_header('Access-Control-Allow-Origin', conf['client_url'])
+        self.set_header('Access-Control-Allow-Credentials', 'true')
 
 class GetBadgesHandler(BadgesHandler):
     @decorators.authenticated
