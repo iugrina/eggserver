@@ -17,7 +17,9 @@ class Recommended:
             bp = self.db.Recommended.find({'user_id' : user_id})[0]
             if not bp :
                 raise egg_errors.UnknownUserIDException
-            return bp['recommended']
+
+            r = bp['recommended']
+            return sorted(r, key=lambda x: x['score'], reverse=True)
         except Exception as e:
             pass
             #self.log(e)
