@@ -17,7 +17,7 @@ import models.recommended.recommended
 from models.recommended.mongodb_model import Recommended
 
  
-class BasketHandler(tornado.web.RequestHandler):
+class RecommendedHandler(tornado.web.RequestHandler):
     def initialize(self, dbp):
         self.dbp = dbp
 
@@ -30,10 +30,12 @@ class BasketHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Credentials', 'true')
 
 
-class GetRecommendedHandler(BasketHandler):
+class GetRecommendedHandler(RecommendedHandler):
     @decorators.authenticated
-    def get(self, user_id):
+    def get(self, user_id, start_id, size):
         user_id = int(user_id)
+        start_id = int(start_id)
+        size = int(size)
 
         if debugconstants.eggPrivileges :
             # check privileges
@@ -43,18 +45,16 @@ class GetRecommendedHandler(BasketHandler):
                 return
 
         try:
-            recommended = self.dbp.get_recommended(user_id)
+            recommended = self.dbp.get_recommended(user_id, start_id, size)
             self.write( json.dumps( recommended, ensure_ascii=False ) )
         except egg_errors.BaseException as e :
             self.write( e.get_json() )
 
-                
+               
 if __name__ == "__main__":
     conf = confegg.get_config()
 
     handlers = []
-
-
 
     conRec = mongokit.Connection(conf['mongo']['host'], conf['mongo']['port'])
     conRec.register([Recommended])
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     recommended_dbp = models.recommended.recommended.Recommended( conRec)
 
     handlers.extend( [
-        (r"/profile/([0-9]+)/recommended", GetRecommendedHandler, dict(dbp=recommended_dbp)),
+        (r"/profile/([0-9]+)/recommended/([0-9]+)/([0-9]+)", GetRecommendedHandler, dict(dbp=recommended_dbp)),
         ])
 
     settings = dict(

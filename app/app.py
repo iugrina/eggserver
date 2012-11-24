@@ -133,7 +133,7 @@ class Application(tornado.web.Application):
     recommended_dbp = models.recommended.recommended.Recommended( conMongo)
 
     handlers.extend( [
-        (r"/profile/([0-9]+)/recommended", controllers.recommended.GetRecommendedHandler, dict(dbp=recommended_dbp)),
+        (r"/profile/([0-9]+)/recommended/([0-9]+)/([0-9]+)", controllers.recommended.GetRecommendedHandler, dict(dbp=recommended_dbp)),
         ])
     
     #
