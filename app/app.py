@@ -223,13 +223,16 @@ class Application(tornado.web.Application):
         profiledata = ProfileData(db, conMongo, logging_file)
 
         handlers.extend([
-            (r"/profile/", controllers.profiles.ProfilesHandler, dict(db=db)),
-            (r"/profile/([0-9]+)", controllers.profiles.ProfileHandler, dict(
-                db=db, profiledata=profiledata)),
-            (r"/profile/login/", controllers.profiles.LoginHandler, dict(
-                db=db)),
-            (r"/profile/signup/",
-             controllers.profiles.SignupHandler, dict(db=db))
+            (r"/profile/", controllers.profiles.ProfilesHandler,
+                dict(db=db)),
+            (r"/profile/([0-9]+)", controllers.profiles.ProfileHandler,
+                dict(db=db, profiledata=profiledata)),
+            (r"/profile/([0-9]+)/([0-9]+)", controllers.profiles.MultiProfileHandler,
+                dict(db=db, profiledata=profiledata)),
+            (r"/profile/login/", controllers.profiles.LoginHandler,
+                dict(db=db)),
+            (r"/profile/signup/", controllers.profiles.SignupHandler,
+                dict(db=db))
         ])
 
         settings = dict(

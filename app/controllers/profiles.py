@@ -51,10 +51,10 @@ class ProfilesHandler(ProfileBase):
         "Creates a new profile"
         try:
             self.profile.add_user(self.params)
-        #validation error
+        # validation error
         except val.InvalidList as e:
             self.write(utils.json.dumps(str(e)))
-        #query error
+        # query error
         except egg_errors.QueryNotPossible as e:
             self.write(e.get_json())
 
@@ -74,25 +74,46 @@ class ProfileHandler(ProfileBase):
 
         try:
             result = self.profiledata.get_user_info(user_id)
-            self.write( json.dumps(result, ensure_ascii=False) )
-        except egg_errors.BaseException as e :
-            self.write( e.get_json() )
+            self.write(json.dumps(result, ensure_ascii=False))
+        except egg_errors.BaseException as e:
+            self.write(e.get_json())
 
     @decorators.authenticated
     def delete(self, user_id):
         "Removed profile with user_id"
         try:
             self.profile.delete_user(int(user_id))
-        #validation error
+        # validation error
         except val.InvalidList as e:
             self.write(utils.json.dumps(str(e)))
-        #query error
+        # query error
         except egg_errors.QueryNotPossible as e:
             self.write(e.get_json())
 
     def put(self, user_id):
         "Updates profile information"
         self.profile.update_user(user_id, self.params)
+
+
+class MultiProfileHandler(ProfileBase):
+    """Handles multiple profile interaction
+    API endpoint: /profile/:id/:number"""
+
+    def initialize(self, db, profiledata):
+        super(MultiProfileHandler, self).initialize(db)
+        self.profiledata = profiledata
+
+    @decorators.authenticated
+    def get(self, start_user_id, number):
+        "Retrieves number profiles starting from start_user_id"
+        start_user_id = int(start_user_id)
+        number = int(number)
+
+        try:
+            result = self.profiledata.get_users_info(start_user_id, number)
+            self.write(json.dumps(result, ensure_ascii=False))
+        except egg_errors.BaseException as e:
+            self.write(e.get_json())
 
 
 class LoginHandler(ProfileBase):
@@ -110,24 +131,27 @@ class LoginHandler(ProfileBase):
             if result:
                 self.write(json.dumps(result, ensure_ascii=False))
                 if not self.get_secure_cookie("user"):
-                    self.set_secure_cookie("user", self.params["username"], 
-                                           expires_days=debugconstants.cookie_max_days)
+                    self.set_secure_cookie("user",
+                            self.params["username"],
+                            expires_days=debugconstants.cookie_max_days)
                 if not self.get_secure_cookie("id"):
-                    self.set_secure_cookie("id", str(result["user_id"]),
-                                           expires_days=debugconstants.cookie_max_days)
+                    self.set_secure_cookie("id",
+                            str(result["user_id"]),
+                            expires_days=debugconstants.cookie_max_days)
                 if not self.get_cookie("id2"):
-                    self.set_cookie("id2", str(result["user_id"]),
-                                    expires_days=debugconstants.cookie_max_days)
+                    self.set_cookie("id2",
+                            str(result["user_id"]),
+                            expires_days=debugconstants.cookie_max_days)
             else:
-                self.write(utils.json.dumps({ 'error': 'unknown user' }))
-        #validation error
+                self.write(utils.json.dumps({'error': 'unknown user'}))
+        # validation error
         except val.InvalidList as e:
             self.write(utils.json.dumps(str(e)))
-        #query error
+        # query error
         except egg_errors.QueryNotPossible as e:
             self.write(e.get_json())
         except KeyError as e:
-            self.write(utils.json.dumps({ 'error': 'no data' }))
+            self.write(utils.json.dumps({'error': 'no data'}))
 
 
 class SignupHandler(ProfileBase):
@@ -142,10 +166,10 @@ class SignupHandler(ProfileBase):
         try:
             self.profile.signup(self.params)
             self.set_secure_cookie("user", self.params["email"])
-        #validation error
+        # validation error
         except val.InvalidList as e:
             self.write(utils.json.dumps(str(e)))
-        #query error
+        # query error
         except egg_errors.QueryNotPossible as e:
             self.write(e.get_json())
 
@@ -153,28 +177,35 @@ class SignupHandler(ProfileBase):
 if __name__ == "__main__":
     conf = confegg.get_config()
     db = sqlalchemy.create_engine("mysql://" + conf['mysql']['username'] + ":" +
-                                       conf['mysql']['password'] + "@" + conf['mysql']['host'] + "/" +
-                                       conf['mysql']['database'])
-    db.metadata  = sqlalchemy.MetaData(bind=db)
-    #db.echo = "debug"
+                                  conf['mysql']['password'] + "@" + conf['mysql']['host'] + "/" +
+                                  conf['mysql']['database'])
+    db.metadata = sqlalchemy.MetaData(bind=db)
+    # db.echo = "debug"
 
-    conMongo = mongokit.Connection(conf['mongo']['host'], conf['mongo']['port'])
+    conMongo = mongokit.Connection(conf[
+                                   'mongo']['host'], conf['mongo']['port'])
     conMongo.register([StatusModel])
 
     f = open(conf['log']['static_path']+conf['log']['master'], "wa")
-    profiledata = ProfileData( db, conMongo, f )
+    profiledata = ProfileData(db, conMongo, f)
 
     settings = dict(
-      debug=debugconstants.debug,
-      cookie_secret=debugconstants.cookie_secret,
+        debug=debugconstants.debug,
+        cookie_secret=debugconstants.cookie_secret,
     )
 
     app = tornado.web.Application([
-      (r"/profile/", controllers.profiles.ProfilesHandler, dict(db=db)),
-      (r"/profile/([0-9]+)", controllers.profiles.ProfileHandler, dict(db=db, profiledata=profiledata)),
-      (r"/profile/login/", controllers.profiles.LoginHandler, dict(db=db)),
-      (r"/profile/signup/", controllers.profiles.SignupHandler, dict(db=db)),
-    ], **settings)
+        (r"/profile/", controllers.profiles.ProfilesHandler,
+            dict(db=db)),
+        (r"/profile/([0-9]+)", controllers.profiles.ProfileHandler,
+            dict(db=db, profiledata=profiledata)),
+        (r"/profile/([0-9]+)/([0-9]+)", controllers.profiles.MultiProfileHandler,
+            dict(db=db, profiledata=profiledata)),
+        (r"/profile/login/", controllers.profiles.LoginHandler,
+            dict(db=db)),
+        (r"/profile/signup/", controllers.profiles.SignupHandler,
+            dict(db=db)),
+        ], **settings)
 
     app.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
