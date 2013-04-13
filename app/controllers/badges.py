@@ -10,6 +10,7 @@ import sqlalchemy
 import controllers
 from common import utils, debugconstants, egg_errors, decorators
 import confegg
+import models.badges.badges
 from models.badges.badges import BadgesUsers, Badges
 
 class BadgesHandler(tornado.web.RequestHandler):
@@ -17,7 +18,7 @@ class BadgesHandler(tornado.web.RequestHandler):
         self.b = badges
         self.blist = badgeslist
         self.btree = badgestree
-    
+
     def get_current_user(self):
         return self.get_secure_cookie("id")
 
@@ -47,7 +48,7 @@ class GetBadgesTreeHandler(BadgesHandler):
 #        except egg_errors.BaseException as e :
 #            self.write( e.get_json() )
 
-    
+
 class BadgesUsersHandler(tornado.web.RequestHandler):
     def initialize(self, badgesusers ):
         self.bu = badgesusers
@@ -101,7 +102,7 @@ class AddChangeDeleteBadgesForUserHandler(BadgesUsersHandler):
         except ValueError:
             e = egg_errors.InvalidJSONException()
             self.write( e.get_json() )
-    
+
     @decorators.authenticated
     def delete(self, user_id, friend_id):
         user_id = int(user_id)
@@ -132,12 +133,15 @@ if __name__ == "__main__":
     images_path = conf['env']['static_url_path'] + conf['images']['images_root']
     badges_path = images_path + conf['images']['badges']
 
-    f = open(conf['log']['static_path']+conf['log']['badges'], "wa")
+    logging_file = open(conf['log'][
+                        'static_path'] + conf['log']['master'], "wa")
 
-    badgesusers = BadgesUsers(db, f)
-    badges = Badges(db, f, badges_path)
+    badges_path = images_path + conf['images']['badges']
 
-    # korist cemo vec gotovu listu i dict jer ce se bedzevi
+    badgesusers = models.badges.badges.BadgesUsers(db, logging_file)
+    badges = Badges(db, logging_file=logging_file, images_path=badges_path)
+
+    # koristit cemo vec gotovu listu i dict jer ce se bedzevi
     # uredjivati sa zasebnim alatom u "maintenance mode"-u
     badgeslist = badges.get_badges()
     badgestree = badges.get_badges_as_tree()
