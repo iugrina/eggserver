@@ -30,7 +30,10 @@ class Profile:
         """Returns number of users starting from start_user_id"""
         result = self.mysql_tables.users.select(
             self.mysql_tables.users.c.user_id >= start_user_id).execute()
-        r = min(result.rowcount, number)
+        if number > 0:
+            r = min(result.rowcount, number)
+        else:
+            r = result.rowcount
         l = list()
         while r >= 1:
             l.append(dict(result.fetchone().items())['user_id'])
