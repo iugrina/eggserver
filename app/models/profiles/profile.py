@@ -156,3 +156,19 @@ class ProfileData():
             d[uid] = self.get_user_info(uid)
 
         return d
+
+    def get_users_info_filtered(self, start_userd_id, number, F):
+        """Returns this and that about users
+        filtered by dict F"""
+
+        badges_ids = F['badges']
+
+        "trenutno podrzava samo filtriranje po bedzevima"
+        user_ids = self.bu.get_users_by_badges(badges_ids)
+
+        d = dict()
+        if number == 0: number = len(user_ids)
+        for uid in user_ids[0:number]:
+            d[uid] = self.get_user_info(uid)
+
+        return d

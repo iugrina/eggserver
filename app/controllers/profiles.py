@@ -115,6 +115,23 @@ class MultiProfileHandler(ProfileBase):
         except egg_errors.BaseException as e:
             self.write(e.get_json())
 
+    @decorators.authenticated
+    def post(self, start_user_id, number):
+        start_user_id = int(start_user_id)
+        number = int(number)
+
+        try:
+            F = tornado.escape.json_decode(self.request.body)
+            try:
+                result = self.profiledata.get_users_info_filtered(
+                    start_user_id, number, F)
+                self.write(json.dumps(result, ensure_ascii=False))
+            except egg_errors.BaseException as e:
+                self.write(e.get_json())
+        except ValueError:
+            e = egg_errors.InvalidJSONException()
+            self.write(e.get_json())
+
 
 class LoginHandler(ProfileBase):
     """Handles single profile interaction
