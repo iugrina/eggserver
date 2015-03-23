@@ -5,3 +5,4 @@ tools/badges_frontend/thumb
 confegg/app.json
 app/settings.py
 .*.swp
+.ropeproject
